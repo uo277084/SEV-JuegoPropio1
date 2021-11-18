@@ -1,23 +1,20 @@
 #include "Player.h"
 
 Player::Player(float x, float y, Game* game)
-	: Actor("res/bomberman.png", x, y, 35, 35, game) {
+	: Actor("res/jugador-parado-down.png", x, y, 35, 35, game) {
 
-	orientation = game->orientationRight;
+	orientation = game->orientationDown;
 	state = game->stateMoving;
 	audioBomba = new Audio("res/efecto_disparo.wav", false);
 
-	aIdleRight = new Animation("res/jugador-parado-derecha.png", width, height,
-		35, 35, 6, 1, true, game);
-	aIdleLeft = new Animation("res/jugador-parado-izquierda.png", width, height,
-		35, 35, 6, 1, true, game);
 	aRunningRight = new Animation("res/jugador-caminando-derecha.png", width, height,
 		140, 35, 6, 4, true, game);
 	aRunningLeft = new Animation("res/jugador-caminando-izquierda.png", width, height,
 		140, 35, 6, 4, true, game);
-
-	animation = aIdleRight;
-
+	aRunningUp = new Animation("res/jugador-caminando-arriba.png", width, height,
+		140, 35, 6, 4, true, game);
+	aRunningDown = new Animation("res/jugador-caminando-abajo.png", width, height,
+		140, 35, 6, 4, true, game);
 }
 
 
@@ -59,16 +56,16 @@ void Player::update() {
 		}
 		if (vx == 0 && vy == 0) {
 			if(orientation == game->orientationRight) {
-				animation = aIdleRight;
+				texture = game->getTexture("res/jugador-parado-derecha.png");
 			}
 			if (orientation == game->orientationLeft) {
-				animation = aIdleLeft;
+				texture = game->getTexture("res/jugador-parado-izquierda.png");
 			}
 			if (orientation == game->orientationUp) {
-				animation = aIdleUp;
+				texture = game->getTexture("res/jugador-parado-up.png");
 			}
 			if (orientation == game->orientationDown) {
-				animation = aIdleDown;
+				texture = game->getTexture("res/jugador-parado-down.png");
 			}
 		}
 	}

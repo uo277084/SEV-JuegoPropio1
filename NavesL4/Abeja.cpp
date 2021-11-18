@@ -1,7 +1,7 @@
 #include "Abeja.h"
 
 Abeja::Abeja(float x, float y, Game* game)
-	: Actor("res/abeja.png", x, y, 36, 40, game) {
+	: Actor("res/abeja.png", x, y, 25, 25, game) {
 
 	state = game->stateMoving;
 

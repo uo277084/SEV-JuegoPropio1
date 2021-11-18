@@ -4,7 +4,6 @@
 #include "Player.h"
 #include "Background.h"
 
-#include "Enemy.h"
 #include "Text.h"
 #include "Tile.h"
 #include "Pad.h"
@@ -16,6 +15,8 @@
 #include <sstream> // Leer líneas / String
 #include <list>
 #include "Bomba.h"
+#include "Abeja.h"
+#include "Conejo.h"
 
 class GameLayer : public Layer
 {
@@ -51,7 +52,8 @@ public:
 	Player* player;
 	Background* background;
 	Actor* backgroundPoints;
-	list<Enemy*> enemies;
+	list<Abeja*> enemiesBees;
+	list<Conejo*> enemiesRabbits;
 	list<Tile*> bloquesLadrillo;
 	list<Bomba*> bombas;
 

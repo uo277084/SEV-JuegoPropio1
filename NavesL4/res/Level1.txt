@@ -1,5 +1,5 @@
-MMMMM
-M###M
-M#M#M
-M1##M
-MMMMM
+MMMMMM
+M1#C#M
+M###AM
+M####M
+MMMMMM

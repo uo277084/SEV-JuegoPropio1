@@ -30,15 +30,18 @@ void GameLayer::init() {
 	textPoints->content = to_string(points);
 
 	
-	background = new Background("res/fondo_2.png", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
+	background = new Background("res/fondo.jpg", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
 	backgroundPoints = new Actor("res/icono_puntos.png",
 		WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
-	enemies.clear(); // Vaciar por si reiniciamos el juego
-	bombas.clear(); // Vaciar por si reiniciamos el juego
+	//Vaciar por si reiniciamos el juego
+	enemiesRabbits.clear();
+	enemiesRabbits.clear();
+	bombas.clear();
 
-	loadMap("res/" + to_string(game->currentLevel) + ".txt");
+	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
 	//loadMap("res/4.txt");
+	loadMap("res/Level1.txt");
 }
 
 void GameLayer::loadMap(string name) {
@@ -72,12 +75,19 @@ void GameLayer::loadMap(string name) {
 void GameLayer::loadMapObject(char character, float x, float y)
 {
 	switch (character) {
-	case 'E': {
-		Enemy* enemy = new Enemy(x, y, game);
-		// modificación para empezar a contar desde el suelo.
-		enemy->y = enemy->y - enemy->height / 2;
-		enemies.push_back(enemy);
-		space->addDynamicActor(enemy);
+	case 'C': {
+		printf("YAYAYAYYA");
+		Conejo* conejo = new Conejo(x, y, game);
+		conejo->y = conejo->y - conejo->height / 2;
+		enemiesRabbits.push_back(conejo);
+		space->addDynamicActor(conejo);
+		break;
+	}
+	case 'A': {
+		Abeja* abeja = new Abeja(x, y, game);
+		abeja->y = abeja->y - abeja->height / 2;
+		enemiesBees.push_back(abeja);
+		space->addDynamicActor(abeja);
 		break;
 	}
 	case '1': {
@@ -87,8 +97,8 @@ void GameLayer::loadMapObject(char character, float x, float y)
 		space->addDynamicActor(player);
 		break;
 	}
-	case '#': {
-		Tile* tile = new Tile("res/bloque_tierra.png", x, y, game);
+	case 'M': {
+		Tile* tile = new Tile("res/bloque_metal1.png", x, y, game);
 		// modificación para empezar a contar desde el suelo.
 		tile->y = tile->y - tile->height / 2;
 		tiles.push_back(tile);
@@ -197,16 +207,28 @@ void GameLayer::update() {
 	space->update();
 	background->update();
 	player->update();
-	for (auto const& enemy : enemies) {
-		enemy->update();
+	for (auto const& bee : enemiesBees) {
+		bee->update();
 	}
-	for (auto const& projectile : bombas) {
-		projectile->update();
+	for (auto const& rabbit : enemiesRabbits) {
+		rabbit->update();
+	}
+	for (auto const& bomb : bombas) {
+		bomb->update();
 	}
 
 	// Colisiones
-	for (auto const& enemy : enemies) {
-		if (player->isOverlap(enemy)) {
+	for (auto const& bee : enemiesBees) {
+		if (player->isOverlap(bee)) {
+			player->loseLife();
+			if (player->lifes <= 0) {
+				init();
+				return;
+			}
+		}
+	}
+	for (auto const& rabbit : enemiesRabbits) {
+		if (player->isOverlap(rabbit)) {
 			player->loseLife();
 			if (player->lifes <= 0) {
 				init();
@@ -217,68 +239,102 @@ void GameLayer::update() {
 
 	// Colisiones , Enemy - Projectile
 
-	list<Enemy*> deleteEnemies;
-	list<Bomba*> deleteProjectiles;
-	for (auto const& projectile : bombas) {
-		if (projectile->isInRender(scrollX, scrollY) == false || projectile->vx == 0) {
+	list<Abeja*> deleteEnemiesBees;
+	list<Conejo*> deleteEnemiesRabbits;
+	list<Bomba*> deleteBombs;
 
-			bool pInList = std::find(deleteProjectiles.begin(),
-				deleteProjectiles.end(),
-				projectile) != deleteProjectiles.end();
+	//TODO
+	for (auto const& bomb : bombas) {
+		if (bomb->isInRender(scrollX, scrollY) == false || bomb->vx == 0) {
+
+			bool pInList = std::find(deleteBombs.begin(),
+				deleteBombs.end(),
+				bomb) != deleteBombs.end();
 
 			if (!pInList) {
-				deleteProjectiles.push_back(projectile);
+				deleteBombs.push_back(bomb);
 			}
 		}
 	}
 
-
-
-	for (auto const& enemy : enemies) {
+	for (auto const& bee : enemiesBees) {
 		for (auto const& projectile : bombas) {
-			if (enemy->isOverlap(projectile)) {
-				bool pInList = std::find(deleteProjectiles.begin(),
-					deleteProjectiles.end(),
-					projectile) != deleteProjectiles.end();
+			if (bee->isOverlap(projectile)) {
+				bool pInList = std::find(deleteBombs.begin(),
+					deleteBombs.end(),
+					projectile) != deleteBombs.end();
 
 				if (!pInList) {
-					deleteProjectiles.push_back(projectile);
+					deleteBombs.push_back(projectile);
 				}
 
-
-				enemy->impacted();
+				bee->impacted();
 				points++;
 				textPoints->content = to_string(points);
-
-
 			}
 		}
 	}
 
-	for (auto const& enemy : enemies) {
-		if (enemy->state == game->stateDead) {
-			bool eInList = std::find(deleteEnemies.begin(),
-				deleteEnemies.end(),
-				enemy) != deleteEnemies.end();
+	for (auto const& rabbit : enemiesRabbits) {
+		for (auto const& projectile : bombas) {
+			if (rabbit->isOverlap(projectile)) {
+				bool pInList = std::find(deleteBombs.begin(),
+					deleteBombs.end(),
+					projectile) != deleteBombs.end();
+
+				if (!pInList) {
+					deleteBombs.push_back(projectile);
+				}
+
+				rabbit->impacted();
+				points++;
+				textPoints->content = to_string(points);
+			}
+		}
+	}
+
+	for (auto const& bee : enemiesBees) {
+		if (bee->state == game->stateDead) {
+			bool eInList = std::find(deleteEnemiesBees.begin(),
+				deleteEnemiesBees.end(),
+				bee) != deleteEnemiesBees.end();
 
 			if (!eInList) {
-				deleteEnemies.push_back(enemy);
+				deleteEnemiesBees.push_back(bee);
 			}
 		}
 	}
 
-	for (auto const& delEnemy : deleteEnemies) {
-		enemies.remove(delEnemy);
-		space->removeDynamicActor(delEnemy);
-	}
-	deleteEnemies.clear();
+	for (auto const& rabbit : enemiesRabbits) {
+		if (rabbit->state == game->stateDead) {
+			bool eInList = std::find(deleteEnemiesRabbits.begin(),
+				deleteEnemiesRabbits.end(),
+				rabbit) != deleteEnemiesRabbits.end();
 
-	for (auto const& delProjectile : deleteProjectiles) {
-		bombas.remove(delProjectile);
-		space->removeDynamicActor(delProjectile);
-		delete delProjectile;
+			if (!eInList) {
+				deleteEnemiesRabbits.push_back(rabbit);
+			}
+		}
 	}
-	deleteProjectiles.clear();
+
+	for (auto const& delEnemyBee : deleteEnemiesBees) {
+		enemiesBees.remove(delEnemyBee);
+		space->removeDynamicActor(delEnemyBee);
+	}
+	deleteEnemiesBees.clear();
+
+	for (auto const& delEnemyRabbit : deleteEnemiesRabbits) {
+		enemiesRabbits.remove(delEnemyRabbit);
+		space->removeDynamicActor(delEnemyRabbit);
+	}
+	deleteEnemiesRabbits.clear();
+
+	for (auto const& delBomb : deleteBombs) {
+		bombas.remove(delBomb);
+		space->removeDynamicActor(delBomb);
+		delete delBomb;
+	}
+	deleteBombs.clear();
 
 
 	cout << "update GameLayer" << endl;
@@ -320,14 +376,16 @@ void GameLayer::draw() {
 		tile->draw(scrollX, scrollY);
 	}
 
-	for (auto const& projectile : bombas) {
-		projectile->draw(scrollX, scrollY);
+	for (auto const& bomb : bombas) {
+		bomb->draw(scrollX, scrollY);
 	}
 	player->draw(scrollX, scrollY);
-	for (auto const& enemy : enemies) {
-		enemy->draw(scrollX, scrollY);
+	for (auto const& bee : enemiesBees) {
+		bee->draw(scrollX, scrollY);
 	}
-
+	for (auto const& rabbit : enemiesRabbits) {
+		rabbit->draw(scrollX, scrollY);
+	}
 
 	backgroundPoints->draw();
 	textPoints->draw();

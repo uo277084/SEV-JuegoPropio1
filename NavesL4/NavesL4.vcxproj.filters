@@ -48,9 +48,6 @@
     <ClCompile Include="Background.cpp">
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
-    <ClCompile Include="Enemy.cpp">
-      <Filter>Archivos de origen\actores</Filter>
-    </ClCompile>
     <ClCompile Include="Bomba.cpp">
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
@@ -99,9 +96,6 @@
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
     <ClInclude Include="Background.h">
-      <Filter>Archivos de encabezado\actores</Filter>
-    </ClInclude>
-    <ClInclude Include="Enemy.h">
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
     <ClInclude Include="Bomba.h">

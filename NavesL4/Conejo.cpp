@@ -1,14 +1,14 @@
 #include "Conejo.h"
 
 Conejo::Conejo(float x, float y, Game* game)
-	: Actor("res/conejo.png", x, y, 36, 40, game) {
+	: Actor("res/conejo.png", x, y, 35, 35, game) {
 
 	state = game->stateMoving;
 
 	lifes = 3;
 
 	aMoving = new Animation("res/enemigo_movimiento.png", width, height,
-		108, 40, 6, 3, true, game);
+		32, 16, 6, 2, true, game);
 	animation = aMoving;
 
 	vx = 1;
