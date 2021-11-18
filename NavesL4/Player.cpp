@@ -1,31 +1,24 @@
 #include "Player.h"
 
 Player::Player(float x, float y, Game* game)
-	: Actor("res/jugador.png", x, y, 35, 35, game) {
+	: Actor("res/bomberman.png", x, y, 35, 35, game) {
 
-	onAir = false;
 	orientation = game->orientationRight;
 	state = game->stateMoving;
-	audioShoot = new Audio("res/efecto_disparo.wav", false);
-	aShootingRight = new Animation("res/jugador_disparando_derecha.png",
+	audioBomba = new Audio("res/efecto_disparo.wav", false);
+	aBombaRight = new Animation("res/jugador_disparando_derecha.png",
 		width, height, 160, 40, 6, 4, false, game);
-	aShootingLeft = new Animation("res/jugador_disparando_izquierda.png",
+	aBombaLeft = new Animation("res/jugador_disparando_izquierda.png",
 		width, height, 160, 40, 6, 4, false, game);
 
-	aJumpingRight = new Animation("res/jugador_saltando_derecha.png",
-		width, height, 160, 40, 6, 4, true, game);
-	aJumpingLeft = new Animation("res/jugador_saltando_izquierda.png",
-		width, height, 160, 40, 6, 4, true, game);
-	aIdleRight = new Animation("res/jugador_idle_derecha.png", width, height,
-		320, 40, 6, 8, true, game);
-	aIdleLeft = new Animation("res/jugador_idle_izquierda.png", width, height,
-		320, 40, 6, 8, true, game);
-	aRunningRight = new Animation("res/jugador_corriendo_derecha.png", width, height,
-		320, 40, 6, 8, true, game);
-	aRunningLeft = new Animation("res/jugador_corriendo_izquierda.png", width, height,
-		320, 40, 6, 8, true, game);
-	aRunningLeft = new Animation("res/jugador_corriendo_izquierda.png", width, height,
-		320, 40, 6, 8, true, game);
+	aIdleRight = new Animation("res/jugador-parado-derecha.png", width, height,
+		35, 35, 6, 1, true, game);
+	aIdleLeft = new Animation("res/jugador-parado-izquierda.png", width, height,
+		35, 35, 6, 1, true, game);
+	aRunningRight = new Animation("res/jugador-caminando-derecha.png", width, height,
+		140, 35, 6, 4, true, game);
+	aRunningLeft = new Animation("res/jugador-caminando-izquierda.png", width, height,
+		140, 35, 6, 4, true, game);
 
 	animation = aIdleRight;
 
@@ -33,29 +26,11 @@ Player::Player(float x, float y, Game* game)
 
 
 void Player::update() {
-	// En el aire y moviéndose, PASA a estar saltando
-	if (onAir && state == game->stateMoving) {
-		state = game->stateJumping;
-	}
-	// No está en el aire y estaba saltando, PASA a moverse
-	if (!onAir && state == game->stateJumping) {
-		state = game->stateMoving;
-	}
-
-
 	if (invulnerableTime > 0) {
 		invulnerableTime--;
 	}
 
 	bool endAnimation = animation->update();
-
-	if (collisionDown == true) {
-		onAir = false;
-	}
-	else {
-		onAir = true;
-	}
-
 
 	// Acabo la animación, no sabemos cual
 	if (endAnimation) {
@@ -76,20 +51,12 @@ void Player::update() {
 
 
 	// Selección de animación basada en estados
-	if (state == game->stateJumping) {
-		if (orientation == game->orientationRight) {
-			animation = aJumpingRight;
-		}
-		if (orientation == game->orientationLeft) {
-			animation = aJumpingLeft;
-		}
-	}
 	if (state == game->stateShooting) {
 		if (orientation == game->orientationRight) {
-			animation = aShootingRight;
+			animation = aBombaRight;
 		}
 		if (orientation == game->orientationLeft) {
-			animation = aShootingLeft;
+			animation = aBombaLeft;
 		}
 	}
 	if (state == game->stateMoving) {
@@ -126,15 +93,15 @@ void Player::moveY(float axis) {
 	vy = axis * 3;
 }
 
-Projectile* Player::shoot() {
+Bomba* Player::shoot() {
 
 	if (shootTime == 0) {
 		state = game->stateShooting;
-		audioShoot->play();
-		aShootingLeft->currentFrame = 0; //"Rebobinar" aniamción
-		aShootingRight->currentFrame = 0; //"Rebobinar" aniamción
+		audioBomba->play();
+		aBombaLeft->currentFrame = 0; //"Rebobinar" aniamción
+		aBombaRight->currentFrame = 0; //"Rebobinar" aniamción
 		shootTime = shootCadence;
-		Projectile* projectile = new Projectile(x, y, game);
+		Bomba* projectile = new Bomba(x, y, game);
 		if (orientation == game->orientationLeft) {
 			projectile->vx = projectile->vx * -1; // Invertir
 		}
@@ -153,13 +120,6 @@ void Player::draw(float scrollX, float scrollY) {
 		if (invulnerableTime % 10 >= 0 && invulnerableTime % 10 <= 5) {
 			animation->draw(x - scrollX, y - scrollY);
 		}
-	}
-}
-
-void Player::jump() {
-	if (!onAir) {
-		vy = -16;
-		onAir = true;
 	}
 }
 

@@ -5,7 +5,6 @@
 #include "Background.h"
 
 #include "Enemy.h"
-#include "Projectile.h"
 #include "Text.h"
 #include "Tile.h"
 #include "Pad.h"
@@ -16,6 +15,7 @@
 #include <fstream> // Leer ficheros
 #include <sstream> // Leer líneas / String
 #include <list>
+#include "Bomba.h"
 
 class GameLayer : public Layer
 {
@@ -36,10 +36,8 @@ public:
 	// Elementos de interfaz
 	SDL_GameController* gamePad;
 	Pad* pad;
-	Actor* buttonJump;
 	Actor* buttonShoot;
 
-	Tile* cup; // Elemento de final de nivel
 	Space* space;
 	float scrollX;
 	float scrollY;
@@ -54,7 +52,8 @@ public:
 	Background* background;
 	Actor* backgroundPoints;
 	list<Enemy*> enemies;
-	list<Projectile*> projectiles;
+	list<Tile*> bloquesLadrillo;
+	list<Bomba*> bombas;
 
 	bool controlContinue = false;
 	bool controlShoot = false;

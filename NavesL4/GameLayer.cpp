@@ -15,7 +15,6 @@ GameLayer::GameLayer(Game* game)
 void GameLayer::init() {
 	pad = new Pad(WIDTH * 0.15, HEIGHT * 0.80, game);
 
-	buttonJump = new Actor("res/boton_salto.png", WIDTH * 0.9, HEIGHT * 0.55, 100, 100, game);
 	buttonShoot = new Actor("res/boton_disparo.png", WIDTH * 0.75, HEIGHT * 0.83, 100, 100, game);
 
 	space = new Space(1);
@@ -23,7 +22,7 @@ void GameLayer::init() {
 	scrollY = 0;
 	tiles.clear();
 
-	audioBackground = new Audio("res/musica_ambiente.mp3", true);
+	audioBackground = new Audio("res/music-background.mp3", true);
 	audioBackground->play();
 
 	points = 0;
@@ -36,7 +35,7 @@ void GameLayer::init() {
 		WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
 	enemies.clear(); // Vaciar por si reiniciamos el juego
-	projectiles.clear(); // Vaciar por si reiniciamos el juego
+	bombas.clear(); // Vaciar por si reiniciamos el juego
 
 	loadMap("res/" + to_string(game->currentLevel) + ".txt");
 	//loadMap("res/4.txt");
@@ -73,13 +72,6 @@ void GameLayer::loadMap(string name) {
 void GameLayer::loadMapObject(char character, float x, float y)
 {
 	switch (character) {
-	case 'C': {
-		cup = new Tile("res/copa.png", x, y, game);
-		// modificación para empezar a contar desde el suelo.
-		cup->y = cup->y - cup->height / 2;
-		space->addDynamicActor(cup); // Realmente no hace falta
-		break;
-	}
 	case 'E': {
 		Enemy* enemy = new Enemy(x, y, game);
 		// modificación para empezar a contar desde el suelo.
@@ -153,14 +145,16 @@ void GameLayer::processControls() {
 		pause = false;
 		controlContinue = false;
 	}
+	/*
 	if (controlShoot) {
 		Projectile* newProjectile = player->shoot();
 		if (newProjectile != NULL) {
 			space->addDynamicActor(newProjectile);
-			projectiles.push_back(newProjectile);
+			bombas.push_back(newProjectile);
 		}
 
 	}
+	*/
 
 	// Eje X
 	if (controlMoveX > 0) {
@@ -175,13 +169,13 @@ void GameLayer::processControls() {
 
 	// Eje Y
 	if (controlMoveY > 0) {
-	
+		player->moveY(1);
 	}
 	else if (controlMoveY < 0) {
-		player->jump();
+		player->moveY(-1);
 	}
 	else {
-
+		player->moveY(0);
 	}
 
 
@@ -193,16 +187,7 @@ void GameLayer::update() {
 		return;
 	}
 	// Nivel superado
-	if (cup->isOverlap(player)) {
-		game->currentLevel++;
-		if (game->currentLevel > game->finalLevel) {
-			game->currentLevel = 0;
-		}
-		message = new Actor("res/mensaje_ganar.png", WIDTH * 0.5, HEIGHT * 0.5,
-			WIDTH, HEIGHT, game);
-		pause = true;
-		init();
-	}
+	
 
 	// Jugador se cae
 	if (player->y > HEIGHT + 80) {
@@ -215,7 +200,7 @@ void GameLayer::update() {
 	for (auto const& enemy : enemies) {
 		enemy->update();
 	}
-	for (auto const& projectile : projectiles) {
+	for (auto const& projectile : bombas) {
 		projectile->update();
 	}
 
@@ -233,8 +218,8 @@ void GameLayer::update() {
 	// Colisiones , Enemy - Projectile
 
 	list<Enemy*> deleteEnemies;
-	list<Projectile*> deleteProjectiles;
-	for (auto const& projectile : projectiles) {
+	list<Bomba*> deleteProjectiles;
+	for (auto const& projectile : bombas) {
 		if (projectile->isInRender(scrollX, scrollY) == false || projectile->vx == 0) {
 
 			bool pInList = std::find(deleteProjectiles.begin(),
@@ -250,7 +235,7 @@ void GameLayer::update() {
 
 
 	for (auto const& enemy : enemies) {
-		for (auto const& projectile : projectiles) {
+		for (auto const& projectile : bombas) {
 			if (enemy->isOverlap(projectile)) {
 				bool pInList = std::find(deleteProjectiles.begin(),
 					deleteProjectiles.end(),
@@ -289,7 +274,7 @@ void GameLayer::update() {
 	deleteEnemies.clear();
 
 	for (auto const& delProjectile : deleteProjectiles) {
-		projectiles.remove(delProjectile);
+		bombas.remove(delProjectile);
 		space->removeDynamicActor(delProjectile);
 		delete delProjectile;
 	}
@@ -335,10 +320,9 @@ void GameLayer::draw() {
 		tile->draw(scrollX, scrollY);
 	}
 
-	for (auto const& projectile : projectiles) {
+	for (auto const& projectile : bombas) {
 		projectile->draw(scrollX, scrollY);
 	}
-	cup->draw(scrollX, scrollY);
 	player->draw(scrollX, scrollY);
 	for (auto const& enemy : enemies) {
 		enemy->draw(scrollX, scrollY);
@@ -350,7 +334,6 @@ void GameLayer::draw() {
 
 	// HUD
 	if (game->input == game->inputMouse) {
-		buttonJump->draw(); // NO TIENEN SCROLL, POSICION FIJA
 		buttonShoot->draw(); // NO TIENEN SCROLL, POSICION FIJA
 		pad->draw(); // NO TIENEN SCROLL, POSICION FIJA
 	}
@@ -415,9 +398,6 @@ void GameLayer::mouseToControls(SDL_Event event) {
 		if (buttonShoot->containsPoint(motionX, motionY)) {
 			controlShoot = true;
 		}
-		if (buttonJump->containsPoint(motionX, motionY)) {
-			controlMoveY = -1;
-		}
 
 	}
 	// Cada vez que se mueve
@@ -437,9 +417,6 @@ void GameLayer::mouseToControls(SDL_Event event) {
 		if (buttonShoot->containsPoint(motionX, motionY) == false) {
 			controlShoot = false;
 		}
-		if (buttonJump->containsPoint(motionX, motionY) == false) {
-			controlMoveY = 0;
-		}
 
 	}
 	// Cada vez que levantan el click
@@ -453,10 +430,6 @@ void GameLayer::mouseToControls(SDL_Event event) {
 		if (buttonShoot->containsPoint(motionX, motionY)) {
 			controlShoot = false;
 		}
-		if (buttonJump->containsPoint(motionX, motionY)) {
-			controlMoveY = 0;
-		}
-
 	}
 }
 
