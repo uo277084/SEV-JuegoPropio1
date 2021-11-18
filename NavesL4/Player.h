@@ -27,10 +27,6 @@ public:
 	Animation* aRunningLeft;
 	Animation* aRunningUp;
 	Animation* aRunningDown;
-	Animation* aBombaRight;
-	Animation* aBombaLeft;
-	Animation* aBombaUp;
-	Animation* aBombaDown;
 	Animation* animation; // Referencia a la animación mostrada
 	Audio* audioBomba;
 	int shootCadence = 30;
