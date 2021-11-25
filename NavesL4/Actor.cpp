@@ -18,7 +18,7 @@ Actor::Actor(string filename, float x, float y, int width, int height, Game* gam
 	this->height = height;
 }
 
-void Actor::draw(float scrollX, float scrollY) {
+void Actor::draw(float scrollX) {
 	// Recorte en el fichero de la imagen
 	SDL_Rect source;
 	source.x = 0;
@@ -29,7 +29,7 @@ void Actor::draw(float scrollX, float scrollY) {
 	// Donde se va a pegar en el renderizador
 	SDL_Rect destination;
 	destination.x = x - width / 2 - scrollX;
-	destination.y = y - height / 2 - scrollY;
+	destination.y = y - height / 2;
 	destination.w = width;
 	destination.h = height;
 	// Modificar para que la referencia sea el punto central

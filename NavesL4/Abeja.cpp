@@ -61,6 +61,6 @@ void Abeja::impacted() {
 }
 
 
-void Abeja::draw(float scrollX, float scrollY) {
-	animation->draw(x - scrollX, y - scrollY);
+void Abeja::draw(float scrollX) {
+	animation->draw(x - scrollX, y);
 }

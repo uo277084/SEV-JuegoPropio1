@@ -13,20 +13,21 @@ public:
 	void update();
 	void moveX(float axis);
 	void moveY(float axis);
-	void draw(float scrollX = 0, float scrollY = 0) override; // Va a sobrescribir
+	void draw(float scrollX = 0) override; // Va a sobrescribir
 	void loseLife();
 	int lifes = 3;
 	int invulnerableTime = 0;
 	int orientation;
 	int state;
-	Animation* aIdleRight;
-	Animation* aIdleLeft;
-	Animation* aIdleUp;
-	Animation* aIdleDown;
+	bool anim;
 	Animation* aRunningRight;
 	Animation* aRunningLeft;
 	Animation* aRunningUp;
 	Animation* aRunningDown;
+	Animation* aIdleRight;
+	Animation* aIdleLeft;
+	Animation* aIdleUp;
+	Animation* aIdleDown;
 	Animation* animation; // Referencia a la animación mostrada
 	Audio* audioBomba;
 	int shootCadence = 30;

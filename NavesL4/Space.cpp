@@ -18,6 +18,7 @@ void Space::update() {
 
         // Aun no se han detectado choques
         actor->collisionDown = false;
+        actor->collisionUp = false;
         actor->outLeft = true;
         actor->outRight = true;
 

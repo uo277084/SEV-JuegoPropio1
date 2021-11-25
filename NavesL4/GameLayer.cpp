@@ -19,7 +19,6 @@ void GameLayer::init() {
 
 	space = new Space(1);
 	scrollX = 0;
-	scrollY = 0;
 	tiles.clear();
 
 	audioBackground = new Audio("res/music-background.mp3", true);
@@ -35,7 +34,7 @@ void GameLayer::init() {
 		WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
 	//Vaciar por si reiniciamos el juego
-	enemiesRabbits.clear();
+	enemiesBees.clear();
 	enemiesRabbits.clear();
 	bombas.clear();
 
@@ -205,7 +204,6 @@ void GameLayer::update() {
 	}
 
 	space->update();
-	background->update();
 	player->update();
 	for (auto const& bee : enemiesBees) {
 		bee->update();
@@ -245,7 +243,7 @@ void GameLayer::update() {
 
 	//TODO
 	for (auto const& bomb : bombas) {
-		if (bomb->isInRender(scrollX, scrollY) == false || bomb->vx == 0) {
+		if (bomb->isInRender(scrollX) == false || bomb->vx == 0) {
 
 			bool pInList = std::find(deleteBombs.begin(),
 				deleteBombs.end(),
@@ -354,17 +352,6 @@ void GameLayer::calculateScroll() {
 			scrollX = player->x - WIDTH * 0.7;
 		}
 	}
-	if (player->y > HEIGHT * 0.5) {
-		if (player->y - scrollY < HEIGHT * 0.5) {
-			scrollY = player->y - HEIGHT * 0.5;
-		}
-	}
-
-	if (player->y < mapWidth - HEIGHT * 0.5) {
-		if (player->y - scrollY > HEIGHT * 0.5) {
-			scrollY = player->y - HEIGHT * 0.5;
-		}
-	}
 }
 
 
@@ -373,18 +360,18 @@ void GameLayer::draw() {
 
 	background->draw();
 	for (auto const& tile : tiles) {
-		tile->draw(scrollX, scrollY);
+		tile->draw(scrollX);
 	}
 
 	for (auto const& bomb : bombas) {
-		bomb->draw(scrollX, scrollY);
+		bomb->draw(scrollX);
 	}
-	player->draw(scrollX, scrollY);
+	player->draw(scrollX);
 	for (auto const& bee : enemiesBees) {
-		bee->draw(scrollX, scrollY);
+		bee->draw(scrollX);
 	}
 	for (auto const& rabbit : enemiesRabbits) {
-		rabbit->draw(scrollX, scrollY);
+		rabbit->draw(scrollX);
 	}
 
 	backgroundPoints->draw();

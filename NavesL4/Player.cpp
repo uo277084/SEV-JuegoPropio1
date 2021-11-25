@@ -14,7 +14,18 @@ Player::Player(float x, float y, Game* game)
 	aRunningUp = new Animation("res/jugador-caminando-arriba.png", width, height,
 		140, 35, 6, 4, true, game);
 	aRunningDown = new Animation("res/jugador-caminando-abajo.png", width, height,
-		140, 35, 6, 4, true, game);
+		140, 35, 6, 4, true, game); 
+	aIdleRight = new Animation("res/jugador-parado-derecha.png", width, height,
+		35, 35, 6, 1, true, game);
+	aIdleLeft = new Animation("res/jugador-parado-izquierda.png", width, height,
+		35, 35, 6, 1, true, game);
+	aIdleUp = new Animation("res/jugador-parado-up.png", width, height,
+		35, 35, 6, 1, true, game);
+	aIdleDown = new Animation("res/jugador-parado-down.png", width, height,
+		35, 35, 6, 1, true, game);
+
+	animation = aIdleDown;
+	orientation = game->orientationDown;
 }
 
 
@@ -30,10 +41,10 @@ void Player::update() {
 	if (vx < 0 && vy == 0) {
 		orientation = game->orientationLeft;
 	}
-	if (vx == 0 && vy < 0) {
+	if (vx == 0 && vy > 0) {
 		orientation = game->orientationDown;
 	}
-	if (vx == 0 && vy > 0) {
+	if (vx == 0 && vy < 0) {
 		orientation = game->orientationUp;
 	}
 
@@ -56,25 +67,23 @@ void Player::update() {
 		}
 		if (vx == 0 && vy == 0) {
 			if(orientation == game->orientationRight) {
-				texture = game->getTexture("res/jugador-parado-derecha.png");
+				animation = aIdleRight;
 			}
 			if (orientation == game->orientationLeft) {
-				texture = game->getTexture("res/jugador-parado-izquierda.png");
+				animation = aIdleLeft;
 			}
 			if (orientation == game->orientationUp) {
-				texture = game->getTexture("res/jugador-parado-up.png");
+				animation = aIdleUp;
 			}
 			if (orientation == game->orientationDown) {
-				texture = game->getTexture("res/jugador-parado-down.png");
+				animation = aIdleDown;
 			}
 		}
 	}
-
-
 	if (shootTime > 0) {
 		shootTime--;
 	}
-
+	animation->update();
 }
 
 void Player::moveX(float axis) {
@@ -101,13 +110,13 @@ Bomba* Player::shoot() {
 	}
 }
 
-void Player::draw(float scrollX, float scrollY) {
+void Player::draw(float scrollX) {
 	if (invulnerableTime == 0) {
-		animation->draw(x - scrollX, y - scrollY);
+		animation->draw(x - scrollX, y);
 	}
 	else {
 		if (invulnerableTime % 10 >= 0 && invulnerableTime % 10 <= 5) {
-			animation->draw(x - scrollX, y - scrollY);
+			animation->draw(x - scrollX, y);
 		}
 	}
 }

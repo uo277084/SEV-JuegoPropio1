@@ -7,9 +7,11 @@ Conejo::Conejo(float x, float y, Game* game)
 
 	lifes = 3;
 
-	aMoving = new Animation("res/enemigo_movimiento.png", width, height,
-		32, 16, 6, 2, true, game);
-	animation = aMoving;
+	aMovingDerecha = new Animation("res/conejo-derecha.png", width, height,
+		70, 35, 6, 2, true, game);
+	aMovingIzquierda = new Animation("res/conejo-izquierda.png", width, height,
+		70, 35, 6, 2, true, game);
+	animation = aMovingDerecha;
 
 	vx = 1;
 	vxIntelligence = -1;
@@ -65,6 +67,6 @@ void Conejo::impacted() {
 	}
 }
 
-void Conejo::draw(float scrollX, float scrollY) {
-	animation->draw(x - scrollX, y - scrollY);
+void Conejo::draw(float scrollX) {
+	animation->draw(x - scrollX, y);
 }

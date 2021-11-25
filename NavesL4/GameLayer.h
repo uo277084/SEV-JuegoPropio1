@@ -41,7 +41,6 @@ public:
 
 	Space* space;
 	float scrollX;
-	float scrollY;
 	int mapWidth;
 	list<Tile*> tiles;
 
@@ -61,7 +60,5 @@ public:
 	bool controlShoot = false;
 	int controlMoveY = 0;
 	int controlMoveX = 0;
-
-
 };
 
