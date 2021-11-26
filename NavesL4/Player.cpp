@@ -34,6 +34,11 @@ void Player::update() {
 		invulnerableTime--;
 	}
 
+	if (timeAfectado == 0) {
+		timeAfectado = 300;
+		afectado = false;
+	}
+
 	// Establecer orientación
 	if (vx > 0 && vy == 0) {
 		orientation = game->orientationRight;
@@ -94,22 +99,6 @@ void Player::moveY(float axis) {
 	vy = axis * 3;
 }
 
-Bomba* Player::shoot() {
-
-	if (shootTime == 0) {
-		audioBomba->play();
-		shootTime = shootCadence;
-		Bomba* projectile = new Bomba(x, y, game);
-		if (orientation == game->orientationLeft) {
-			projectile->vx = projectile->vx * -1; // Invertir
-		}
-		return projectile;
-	}
-	else {
-		return NULL;
-	}
-}
-
 void Player::draw(float scrollX) {
 	if (invulnerableTime == 0) {
 		animation->draw(x - scrollX, y);
@@ -126,7 +115,28 @@ void Player::loseLife() {
 		if (lifes > 0) {
 			lifes--;
 			invulnerableTime = 100;
-			// 100 actualizaciones 
 		}
 	}
+}
+
+Bomba* Player::putBomb()
+{
+	if (shootTime == 0) {
+		shootTime = shootCadence;
+		Bomba* bomba = new Bomba(x, y, game, afectado);
+		/*
+		if (orientation == game->orientationLeft) {
+			bomba->vx = bomba->vx * -1; // Invertir
+		}
+		*/
+		return bomba;
+	}
+	else {
+		return NULL;
+	}
+}
+
+void Player::menosEfecto()
+{
+	afectado = true;
 }

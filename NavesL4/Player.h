@@ -9,12 +9,13 @@ class Player : public Actor
 {
 public:
 	Player(float x, float y, Game* game);
-	Bomba* shoot();
 	void update();
 	void moveX(float axis);
 	void moveY(float axis);
 	void draw(float scrollX = 0) override; // Va a sobrescribir
 	void loseLife();
+	Bomba* putBomb();
+	void menosEfecto();
 	int lifes = 3;
 	int invulnerableTime = 0;
 	int orientation;
@@ -30,7 +31,9 @@ public:
 	Animation* aIdleDown;
 	Animation* animation; // Referencia a la animación mostrada
 	Audio* audioBomba;
-	int shootCadence = 30;
+	int shootCadence = 50;
 	int shootTime = 0;
+	bool afectado;
+	int timeAfectado;
 };
 

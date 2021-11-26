@@ -2,8 +2,6 @@
 
 Bomba::Bomba(float x, float y, Game* game, bool powerUpAfectado) :
 	Actor("res/bombaImage.png", x, y, 30, 30, game) {
-	vx = 9;
-	vy = -1; // La gravedad inicial es 1
 	afectado = powerUpAfectado;
 	state = stateEncendida;
 	tiempoEncendida = 120;

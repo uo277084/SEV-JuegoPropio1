@@ -57,7 +57,7 @@ public:
 	list<Bomba*> bombas;
 
 	bool controlContinue = false;
-	bool controlShoot = false;
+	bool controlPutBomb = false;
 	int controlMoveY = 0;
 	int controlMoveX = 0;
 };

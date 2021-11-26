@@ -74,36 +74,34 @@ void GameLayer::loadMap(string name) {
 void GameLayer::loadMapObject(char character, float x, float y)
 {
 	switch (character) {
-	case 'C': {
-		printf("YAYAYAYYA");
-		Conejo* conejo = new Conejo(x, y, game);
-		conejo->y = conejo->y - conejo->height / 2;
-		enemiesRabbits.push_back(conejo);
-		space->addDynamicActor(conejo);
-		break;
-	}
-	case 'A': {
-		Abeja* abeja = new Abeja(x, y, game);
-		abeja->y = abeja->y - abeja->height / 2;
-		enemiesBees.push_back(abeja);
-		space->addDynamicActor(abeja);
-		break;
-	}
-	case '1': {
-		player = new Player(x, y, game);
-		// modificación para empezar a contar desde el suelo.
-		player->y = player->y - player->height / 2;
-		space->addDynamicActor(player);
-		break;
-	}
-	case 'M': {
-		Tile* tile = new Tile("res/bloque_metal1.png", x, y, game);
-		// modificación para empezar a contar desde el suelo.
-		tile->y = tile->y - tile->height / 2;
-		tiles.push_back(tile);
-		space->addStaticActor(tile);
-		break;
-	}
+		case 'C': {
+			Conejo* conejo = new Conejo(x, y, game);
+			conejo->y = conejo->y - conejo->height / 2;
+			enemiesRabbits.push_back(conejo);
+			space->addDynamicActor(conejo);
+			break;
+		}
+		case 'A': {
+			Abeja* abeja = new Abeja(x, y, game);
+			abeja->y = abeja->y - abeja->height / 2;
+			enemiesBees.push_back(abeja);
+			space->addDynamicActor(abeja);
+			break;
+		}
+		case '1': {
+			player = new Player(x, y, game);
+			// modificación para empezar a contar desde el suelo.
+			player->y = player->y - player->height / 2;
+			space->addDynamicActor(player);
+			break;
+		}
+		case 'M': {
+			Tile* tile = new Tile("res/bloque_metal1.png", x, y, game);
+			tile->y = tile->y - tile->height / 2;
+			tiles.push_back(tile);
+			space->addStaticActor(tile);
+			break;
+		}
 	}
 }
 
@@ -148,22 +146,19 @@ void GameLayer::processControls() {
 
 	}
 	//procesar controles
-	//procesar controles
 	// Disparar
 	if (controlContinue) {
 		pause = false;
 		controlContinue = false;
 	}
-	/*
-	if (controlShoot) {
-		Projectile* newProjectile = player->shoot();
-		if (newProjectile != NULL) {
-			space->addDynamicActor(newProjectile);
-			bombas.push_back(newProjectile);
-		}
 
+	if (controlPutBomb) {
+		Bomba* bomba = player->putBomb();
+		if (bomba != NULL) {
+			space->addStaticActor(bomba);
+			bombas.push_back(bomba);
+		}
 	}
-	*/
 
 	// Eje X
 	if (controlMoveX > 0) {
@@ -186,9 +181,6 @@ void GameLayer::processControls() {
 	else {
 		player->moveY(0);
 	}
-
-
-
 }
 
 void GameLayer::update() {
@@ -274,14 +266,14 @@ void GameLayer::update() {
 	}
 
 	for (auto const& rabbit : enemiesRabbits) {
-		for (auto const& projectile : bombas) {
-			if (rabbit->isOverlap(projectile)) {
+		for (auto const& bomb : bombas) {
+			if (rabbit->isOverlap(bomb)) {
 				bool pInList = std::find(deleteBombs.begin(),
 					deleteBombs.end(),
-					projectile) != deleteBombs.end();
+					bomb) != deleteBombs.end();
 
 				if (!pInList) {
-					deleteBombs.push_back(projectile);
+					deleteBombs.push_back(bomb);
 				}
 
 				rabbit->impacted();
@@ -413,10 +405,10 @@ void GameLayer::gamePadToControls(SDL_Event event) {
 	}
 
 	if (buttonA) {
-		controlShoot = true;
+		controlPutBomb = true;
 	}
 	else {
-		controlShoot = false;
+		controlPutBomb = false;
 	}
 
 	if (buttonB) {
@@ -441,7 +433,7 @@ void GameLayer::mouseToControls(SDL_Event event) {
 			controlMoveX = pad->getOrientationX(motionX);
 		}
 		if (buttonShoot->containsPoint(motionX, motionY)) {
-			controlShoot = true;
+			controlPutBomb = true;
 		}
 
 	}
@@ -460,7 +452,7 @@ void GameLayer::mouseToControls(SDL_Event event) {
 			controlMoveX = 0;
 		}
 		if (buttonShoot->containsPoint(motionX, motionY) == false) {
-			controlShoot = false;
+			controlPutBomb = false;
 		}
 
 	}
@@ -473,11 +465,10 @@ void GameLayer::mouseToControls(SDL_Event event) {
 		}
 
 		if (buttonShoot->containsPoint(motionX, motionY)) {
-			controlShoot = false;
+			controlPutBomb = false;
 		}
 	}
 }
-
 
 void GameLayer::keysToControls(SDL_Event event) {
 	if (event.type == SDL_KEYDOWN) {
@@ -503,11 +494,9 @@ void GameLayer::keysToControls(SDL_Event event) {
 			controlMoveY = 1;
 			break;
 		case SDLK_SPACE: // dispara
-			controlShoot = true;
+			controlPutBomb = true;
 			break;
 		}
-
-
 	}
 	if (event.type == SDL_KEYUP) {
 		int code = event.key.keysym.sym;
@@ -534,11 +523,9 @@ void GameLayer::keysToControls(SDL_Event event) {
 			}
 			break;
 		case SDLK_SPACE: // dispara
-			controlShoot = false;
+			controlPutBomb = false;
 			break;
 		}
-
 	}
-
 }
 
