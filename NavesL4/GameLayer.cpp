@@ -17,7 +17,7 @@ void GameLayer::init() {
 
 	buttonShoot = new Actor("res/boton_disparo.png", WIDTH * 0.75, HEIGHT * 0.83, 100, 100, game);
 
-	space = new Space(1);
+	space = new Space();
 	scrollX = 0;
 	tiles.clear();
 
@@ -76,7 +76,7 @@ void GameLayer::loadMapObject(char character, float x, float y)
 	switch (character) {
 		case 'C': {
 			Conejo* conejo = new Conejo(x, y, game);
-			conejo->y = conejo->y - conejo->height / 2;
+			conejo->y = conejo->y - conejo->height /2;
 			enemiesRabbits.push_back(conejo);
 			space->addDynamicActor(conejo);
 			break;
@@ -248,14 +248,14 @@ void GameLayer::update() {
 	}
 
 	for (auto const& bee : enemiesBees) {
-		for (auto const& projectile : bombas) {
-			if (bee->isOverlap(projectile)) {
+		for (auto const& bomb : bombas) {
+			if (bee->isOverlap(bomb)) {
 				bool pInList = std::find(deleteBombs.begin(),
 					deleteBombs.end(),
-					projectile) != deleteBombs.end();
+					bomb) != deleteBombs.end();
 
 				if (!pInList) {
-					deleteBombs.push_back(projectile);
+					deleteBombs.push_back(bomb);
 				}
 
 				bee->impacted();

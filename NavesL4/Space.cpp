@@ -1,33 +1,24 @@
 #include "Space.h"
 
-Space::Space(float gravity) {
-	this->gravity = gravity;
+Space::Space() {
 	dynamicActors.clear();
 	staticActors.clear();
 }
 
 void Space::update() {
 	for (auto const& actor : dynamicActors) {
-        /*
-		actor->vy = actor->vy + gravity;
-		// máxima velocidad de caída por gravedad
-		if (actor->vy > 20) {
-			actor->vy = 20;
-		}
-        */
 
         // Aun no se han detectado choques
         actor->collisionDown = false;
         actor->collisionUp = false;
-        actor->outLeft = true;
-        actor->outRight = true;
+        actor->collisionRight = false;
+        actor->collisionLeft = false;
 
 		// MoverDerecha / izquierda
 		updateMoveRight(actor);
 		updateMoveLeft(actor);
         updateMoveTop(actor);
         updateMoveDown(actor);
-
 	}
 }
 
@@ -58,6 +49,7 @@ void Space::updateMoveRight(Actor* dynamicAct) {
                     // La distancia es MENOR que nuestro movimiento posible
                     // Tenemos que actualizar el movimiento posible a uno menor
                     possibleMovement = leftStatic - rightDynamic;
+                    dynamicAct->collisionRight = true;
                 }
             }
         }
@@ -95,6 +87,7 @@ void Space::updateMoveLeft(Actor* dynamicAct) {
                     // La distancia es MENOR que nuestro movimiento posible
                     // Tenemos que actualizar el movimiento posible a uno menor
                     possibleMovement = rightStatic - leftDynamic;
+                    dynamicAct->collisionLeft = true;
                 }
 
             }
@@ -136,6 +129,7 @@ void Space::updateMoveTop(Actor* dynamicAct) {
                     // La distancia es MENOR que nuestro movimiento posible
                     // Tenemos que actualizar el movimiento posible a uno menor
                     possibleMovement = downStatic - topDynamic;
+                    dynamicAct->collisionUp = true;
                 }
             }
         }
@@ -177,14 +171,6 @@ void Space::updateMoveDown(Actor* dynamicAct) {
                     // Tenemos que actualizar el movimiento posible a uno menor
                     possibleMovement = topStatic - downDynamic;
                     dynamicAct->collisionDown = true;
-
-                    if (rightDynamic <= rightStatic) {
-                        dynamicAct->outRight = false;
-                    }
-                    if (leftDynamic >= leftStatic) {
-                        dynamicAct->outLeft = false;
-                    }
-
                 }
             }
         }

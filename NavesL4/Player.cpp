@@ -1,7 +1,7 @@
 #include "Player.h"
 
 Player::Player(float x, float y, Game* game)
-	: Actor("res/jugador-parado-down.png", x, y, 35, 35, game) {
+	: Actor("res/jugador-parado-down.png", x, y, 30, 30, game) {
 
 	orientation = game->orientationDown;
 	state = game->stateMoving;

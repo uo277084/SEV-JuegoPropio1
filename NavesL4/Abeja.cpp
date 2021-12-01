@@ -17,46 +17,21 @@ Abeja::Abeja(float x, float y, Game* game)
 
 void Abeja::update() {
 	// Actualizar la animación
-	bool endAnimation = animation->update();
+	animation->update();
 
-	if (state == game->stateDying) {
-		state = game->stateDead;
+	if (collisionDown) {
+		//Se choca abajo
+		vy = vyIntelligence * 1;
 	}
-
-	// Establecer velocidad
-	if (state != game->stateDying) {
-		// no está muerto y se ha quedado parado
-		if (vy == 0) {
-			vyIntelligence = vyIntelligence * -1;
-			vy = vyIntelligence;
-		}
-		if (outRight) {
-			// mover hacia la izquierda vx tiene que ser negativa
-			if (vyIntelligence > 0) {
-				vyIntelligence = vyIntelligence * -1;
-			}
-			vy = vyIntelligence;
-		}
-		if (outLeft) {
-			// mover hacia la derecha vx tiene que ser positiva
-			if (vyIntelligence < 0) {
-				vyIntelligence = vyIntelligence * -1;
-			}
-			vy = vyIntelligence;
-		}
-
+	else if (collisionUp) {
+		//Se choca arriba
+		vy = vyIntelligence * -1;
 	}
-	else {
-		vy = 0;
-	}
-
-
-
 }
 
 void Abeja::impacted() {
-	if (state != game->stateDying) {
-		state = game->stateDying;
+	if (state != game->stateDead) {
+		state = game->stateDead;
 	}
 }
 

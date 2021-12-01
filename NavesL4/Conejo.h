@@ -13,7 +13,6 @@ public:
 	float vxIntelligence;
 	int state;
 	int lifes;
-	int orientation; //0 -> izquierda y 1 -> derecha
 	Animation* aMovingDerecha;
 	Animation* aMovingIzquierda;
 	Animation* animation; // Referencia a la animación mostrada

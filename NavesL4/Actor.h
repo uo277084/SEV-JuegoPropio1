@@ -13,8 +13,8 @@ public:
 	bool isInRender(float scrollX = 0, float scrollY = 0);
 	bool collisionDown;
 	bool collisionUp;
-	bool outRight;
-	bool outLeft;
+	bool collisionRight;
+	bool collisionLeft;
 
 	bool clicked; // Está pulsado
 	SDL_Texture* texture;
