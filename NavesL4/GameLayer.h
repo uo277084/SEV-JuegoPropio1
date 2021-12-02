@@ -17,6 +17,7 @@
 #include "Bomba.h"
 #include "Abeja.h"
 #include "Conejo.h"
+#include "Moneda.h"
 
 class GameLayer : public Layer
 {
@@ -45,16 +46,25 @@ public:
 	list<Tile*> tiles;
 
 	Audio* audioBackground;
-	Text* textPoints;
-	int points;
-	int newEnemyTime = 0;
+
+	Text* textVidas;
+	Text* textEnemigos;
+	int enemigosMatados;
+	Text* textMonedas;
+	int monedasRecogidas;
+
+	Actor* backgroundVidas;
+	Actor* backgroundEnemigos;
+	Actor* backgroundMonedas;
+
 	Player* player;
 	Background* background;
-	Actor* backgroundPoints;
+
 	list<Abeja*> enemiesBees;
 	list<Conejo*> enemiesRabbits;
 	list<Tile*> bloquesLadrillo;
 	list<Bomba*> bombas;
+	list<Moneda*> monedas;
 
 	bool controlContinue = false;
 	bool controlPutBomb = false;

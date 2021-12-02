@@ -24,23 +24,31 @@ void GameLayer::init() {
 	audioBackground = new Audio("res/music-background.mp3", true);
 	audioBackground->play();
 
-	points = 0;
-	textPoints = new Text("hola", WIDTH * 0.92, HEIGHT * 0.04, game);
-	textPoints->content = to_string(points);
-
+	enemigosMatados = 0;
+	monedasRecogidas = 0;
 	
 	background = new Background("res/fondo.jpg", WIDTH * 0.5, HEIGHT * 0.5, -1, game);
-	backgroundPoints = new Actor("res/icono_puntos.png",
-		WIDTH * 0.85, HEIGHT * 0.05, 24, 24, game);
 
 	//Vaciar por si reiniciamos el juego
 	enemiesBees.clear();
 	enemiesRabbits.clear();
 	bombas.clear();
+	bloquesLadrillo.clear();
+	monedas.clear();
 
-	//loadMap("res/" + to_string(game->currentLevel) + ".txt");
-	//loadMap("res/4.txt");
 	loadMap("res/Level1.txt");
+	textVidas = new Text("hola", WIDTH * 0.09, HEIGHT * 0.04, game);
+	textVidas->content = to_string(player->lifes);
+	backgroundVidas = new Actor("res/cara-vidas.png",
+		WIDTH * 0.04, HEIGHT * 0.04, 24, 24, game);
+	textEnemigos = new Text("hola", WIDTH * 0.78, HEIGHT * 0.04, game);
+	textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(enemiesBees.size() + enemiesRabbits.size());
+	backgroundEnemigos = new Actor("res/icono-enemigos.png",
+		WIDTH * 0.71, HEIGHT * 0.04, 24, 24, game);
+	textMonedas = new Text("hola", WIDTH * 0.94, HEIGHT * 0.04, game);
+	textMonedas->content = to_string(monedasRecogidas) + "/" + to_string(monedas.size());
+	backgroundMonedas = new Actor("res/icono-moneda.png",
+		WIDTH * 0.865, HEIGHT * 0.04, 24, 24, game);
 }
 
 void GameLayer::loadMap(string name) {
@@ -188,7 +196,18 @@ void GameLayer::update() {
 		return;
 	}
 	// Nivel superado
-	
+	/*
+	* if (cup->isOverlap(player)) {
+		game->currentLevel++;
+		if (game->currentLevel > game->finalLevel) {
+			game->currentLevel = 0;
+		}
+		message = new Actor("res/mensaje_ganar.png", WIDTH * 0.5, HEIGHT * 0.5,
+			WIDTH, HEIGHT, game);
+		pause = true;
+		init();
+	}
+	*/
 
 	// Jugador se cae
 	if (player->y > HEIGHT + 80) {
@@ -259,8 +278,8 @@ void GameLayer::update() {
 				}
 
 				bee->impacted();
-				points++;
-				textPoints->content = to_string(points);
+				enemigosMatados++;
+				textEnemigos->content = to_string(enemigosMatados);
 			}
 		}
 	}
@@ -277,8 +296,8 @@ void GameLayer::update() {
 				}
 
 				rabbit->impacted();
-				points++;
-				textPoints->content = to_string(points);
+				enemigosMatados++;
+				textEnemigos->content = to_string(enemigosMatados);
 			}
 		}
 	}
@@ -366,8 +385,12 @@ void GameLayer::draw() {
 		rabbit->draw(scrollX);
 	}
 
-	backgroundPoints->draw();
-	textPoints->draw();
+	textEnemigos->draw();
+	textMonedas->draw();
+	textVidas->draw();
+	backgroundEnemigos->draw();
+	backgroundMonedas->draw();
+	backgroundVidas->draw();
 
 	// HUD
 	if (game->input == game->inputMouse) {

@@ -182,7 +182,6 @@ void Space::updateMoveDown(Actor* dynamicAct) {
 
 }
 
-
 void Space::addDynamicActor(Actor* actor) {
 	dynamicActors.push_back(actor);
 }
