@@ -9,9 +9,7 @@ Game::Game() {
 	if (SDL_CreateWindowAndRenderer(WIDTH, HEIGHT, 0, &window, &renderer) < 0) {
 		cout << "Error Window y Renderer" << SDL_GetError() << endl;
 	}
-	SDL_SetWindowTitle(window, "Juego de Naves");
-	// Escalado de imágenes de calidad 
-	// https://wiki.libsdl.org/SDL_HINT_RENDER_SCALE_QUALITY
+	SDL_SetWindowTitle(window, "Boomberman");
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "1");
 	
 	menuLayer = new MenuLayer(this);
@@ -25,7 +23,6 @@ Game::Game() {
 	loopActive = true; // bucle activo
 	loop();
 }
-
 
 void Game::loop() {
 	int initTick; // ms de inicio loop
@@ -92,12 +89,3 @@ SDL_Texture* Game::getTexture(string filename) {
 
 	return mapTextures[filename];
 }
-
-
-
-
-
-
-
-
-
