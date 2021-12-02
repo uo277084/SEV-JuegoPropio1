@@ -25,6 +25,18 @@
     <Filter Include="Archivos de origen\actores">
       <UniqueIdentifier>{d72f9674-6a1c-47ec-9ac3-e65b9c20e91d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Archivos de origen\actores\Enemigos">
+      <UniqueIdentifier>{2a508686-ef4f-4d02-8f4a-206e057ae8a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\actores\Enemigos">
+      <UniqueIdentifier>{b1493d57-f7bc-4690-a9fd-8a1dc2d01eda}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de origen\actores\Objetos">
+      <UniqueIdentifier>{aae1d7a8-4df2-41c9-b165-7c784544fd11}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Archivos de encabezado\actores\Objetos">
+      <UniqueIdentifier>{ac2f21f0-ef29-4452-b6b1-fcd65685a26d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -48,9 +60,6 @@
     <ClCompile Include="Background.cpp">
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
-    <ClCompile Include="Bomba.cpp">
-      <Filter>Archivos de origen\actores</Filter>
-    </ClCompile>
     <ClCompile Include="Text.cpp">
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
@@ -69,17 +78,20 @@
     <ClCompile Include="Pad.cpp">
       <Filter>Archivos de origen\actores</Filter>
     </ClCompile>
-    <ClCompile Include="MenuLayer.cpp">
-      <Filter>Archivos de origen\actores</Filter>
-    </ClCompile>
     <ClCompile Include="Abeja.cpp">
-      <Filter>Archivos de origen\actores</Filter>
+      <Filter>Archivos de origen\actores\Enemigos</Filter>
     </ClCompile>
     <ClCompile Include="Conejo.cpp">
-      <Filter>Archivos de origen\actores</Filter>
+      <Filter>Archivos de origen\actores\Enemigos</Filter>
     </ClCompile>
     <ClCompile Include="Moneda.cpp">
-      <Filter>Archivos de origen</Filter>
+      <Filter>Archivos de origen\actores\Objetos</Filter>
+    </ClCompile>
+    <ClCompile Include="Bomba.cpp">
+      <Filter>Archivos de origen\actores\Objetos</Filter>
+    </ClCompile>
+    <ClCompile Include="MenuLayer.cpp">
+      <Filter>Archivos de origen\layers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -101,9 +113,6 @@
     <ClInclude Include="Background.h">
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
-    <ClInclude Include="Bomba.h">
-      <Filter>Archivos de encabezado\actores</Filter>
-    </ClInclude>
     <ClInclude Include="Text.h">
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
@@ -122,17 +131,20 @@
     <ClInclude Include="Pad.h">
       <Filter>Archivos de encabezado\actores</Filter>
     </ClInclude>
-    <ClInclude Include="MenuLayer.h">
-      <Filter>Archivos de encabezado\actores</Filter>
-    </ClInclude>
     <ClInclude Include="Abeja.h">
-      <Filter>Archivos de encabezado\actores</Filter>
+      <Filter>Archivos de encabezado\actores\Enemigos</Filter>
     </ClInclude>
     <ClInclude Include="Conejo.h">
-      <Filter>Archivos de encabezado\actores</Filter>
+      <Filter>Archivos de encabezado\actores\Enemigos</Filter>
+    </ClInclude>
+    <ClInclude Include="Bomba.h">
+      <Filter>Archivos de encabezado\actores\Objetos</Filter>
     </ClInclude>
     <ClInclude Include="Moneda.h">
-      <Filter>Archivos de encabezado</Filter>
+      <Filter>Archivos de encabezado\actores\Objetos</Filter>
+    </ClInclude>
+    <ClInclude Include="MenuLayer.h">
+      <Filter>Archivos de encabezado\layers</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
