@@ -37,16 +37,18 @@ void GameLayer::init() {
 	monedas.clear();
 
 	loadMap("res/Level1.txt");
+	numEnemigos = enemiesBees.size() + enemiesRabbits.size();
+	numMonedas = monedas.size();
 	textVidas = new Text("hola", WIDTH * 0.09, HEIGHT * 0.04, game);
 	textVidas->content = to_string(player->lifes);
 	backgroundVidas = new Actor("res/cara-vidas.png",
 		WIDTH * 0.04, HEIGHT * 0.04, 24, 24, game);
 	textEnemigos = new Text("hola", WIDTH * 0.78, HEIGHT * 0.04, game);
-	textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(enemiesBees.size() + enemiesRabbits.size());
+	textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
 	backgroundEnemigos = new Actor("res/icono-enemigos.png",
 		WIDTH * 0.71, HEIGHT * 0.04, 24, 24, game);
 	textMonedas = new Text("hola", WIDTH * 0.94, HEIGHT * 0.04, game);
-	textMonedas->content = to_string(monedasRecogidas) + "/" + to_string(monedas.size());
+	textMonedas->content = to_string(monedasRecogidas) + "/" + to_string(numMonedas);
 	backgroundMonedas = new Actor("res/icono-moneda.png",
 		WIDTH * 0.865, HEIGHT * 0.04, 24, 24, game);
 }
@@ -103,11 +105,18 @@ void GameLayer::loadMapObject(char character, float x, float y)
 			space->addDynamicActor(player);
 			break;
 		}
-		case 'M': {
+		case 'P': {
 			Tile* tile = new Tile("res/bloque_metal1.png", x, y, game);
 			tile->y = tile->y - tile->height / 2;
 			tiles.push_back(tile);
 			space->addStaticActor(tile);
+			break;
+		}
+		case 'M': {
+			Moneda* moneda = new Moneda(x, y, game);
+			moneda->y = moneda->y - 2 * (moneda->height / 3);
+			monedas.push_back(moneda);
+			space->addStaticActor(moneda);
 			break;
 		}
 	}
@@ -196,8 +205,9 @@ void GameLayer::update() {
 		return;
 	}
 	// Nivel superado
-	/*
-	* if (cup->isOverlap(player)) {
+	bool conditionEnemies = enemigosMatados == (enemiesBees.size() + enemiesRabbits.size());
+	bool conditionCoins = monedasRecogidas == monedas.size();
+	if (conditionEnemies && conditionCoins) {
 		game->currentLevel++;
 		if (game->currentLevel > game->finalLevel) {
 			game->currentLevel = 0;
@@ -205,12 +215,6 @@ void GameLayer::update() {
 		message = new Actor("res/mensaje_ganar.png", WIDTH * 0.5, HEIGHT * 0.5,
 			WIDTH, HEIGHT, game);
 		pause = true;
-		init();
-	}
-	*/
-
-	// Jugador se cae
-	if (player->y > HEIGHT + 80) {
 		init();
 	}
 
@@ -222,11 +226,9 @@ void GameLayer::update() {
 	for (auto const& rabbit : enemiesRabbits) {
 		rabbit->update();
 	}
-	for (auto const& bomb : bombas) {
-		bomb->update();
-	}
 
 	// Colisiones
+
 	for (auto const& bee : enemiesBees) {
 		if (player->isOverlap(bee)) {
 			player->loseLife();
@@ -239,7 +241,15 @@ void GameLayer::update() {
 	for (auto const& rabbit : enemiesRabbits) {
 		if (player->isOverlap(rabbit)) {
 			player->loseLife();
+			textVidas->content = to_string(player->lifes);
 			if (player->lifes <= 0) {
+				game->currentLevel++;
+				if (game->currentLevel > game->finalLevel) {
+					game->currentLevel = 0;
+				}
+				message = new Actor("res/mensaje_perder.png", WIDTH * 0.5, HEIGHT * 0.5,
+					WIDTH, HEIGHT, game);
+				pause = true;
 				init();
 				return;
 			}
@@ -251,6 +261,7 @@ void GameLayer::update() {
 	list<Abeja*> deleteEnemiesBees;
 	list<Conejo*> deleteEnemiesRabbits;
 	list<Bomba*> deleteBombs;
+	list<Moneda*> deleteMonedas;
 
 	//TODO
 	for (auto const& bomb : bombas) {
@@ -302,6 +313,20 @@ void GameLayer::update() {
 		}
 	}
 
+	for (auto const& moneda : monedas) {
+		if (player->isOverlap(moneda)) {
+			bool pInList = std::find(deleteMonedas.begin(),
+				deleteMonedas.end(),
+				moneda) != deleteMonedas.end();
+
+			if (!pInList) {
+				deleteMonedas.push_back(moneda);
+			}
+			monedasRecogidas++;
+			textMonedas->content = to_string(monedasRecogidas) + "/" + to_string(numMonedas);
+		}
+	}
+
 	for (auto const& bee : enemiesBees) {
 		if (bee->state == game->stateDead) {
 			bool eInList = std::find(deleteEnemiesBees.begin(),
@@ -345,6 +370,12 @@ void GameLayer::update() {
 	}
 	deleteBombs.clear();
 
+	for (auto const& delMoneda : deleteMonedas) {
+		monedas.remove(delMoneda);
+		space->removeStaticActor(delMoneda);
+		delete delMoneda;
+	}
+	deleteMonedas.clear();
 
 	cout << "update GameLayer" << endl;
 }
@@ -383,6 +414,9 @@ void GameLayer::draw() {
 	}
 	for (auto const& rabbit : enemiesRabbits) {
 		rabbit->draw(scrollX);
+	}
+	for (auto const& moneda : monedas) {
+		moneda->draw(scrollX);
 	}
 
 	textEnemigos->draw();

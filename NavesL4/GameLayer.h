@@ -70,5 +70,8 @@ public:
 	bool controlPutBomb = false;
 	int controlMoveY = 0;
 	int controlMoveX = 0;
+
+	int numEnemigos;
+	int numMonedas;
 };
 
