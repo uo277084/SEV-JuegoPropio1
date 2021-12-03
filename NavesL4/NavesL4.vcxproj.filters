@@ -93,6 +93,9 @@
     <ClCompile Include="MenuLayer.cpp">
       <Filter>Archivos de origen\layers</Filter>
     </ClCompile>
+    <ClCompile Include="PowerUpVida.cpp">
+      <Filter>Archivos de origen\actores\Objetos</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Game.h">
@@ -145,6 +148,9 @@
     </ClInclude>
     <ClInclude Include="MenuLayer.h">
       <Filter>Archivos de encabezado\layers</Filter>
+    </ClInclude>
+    <ClInclude Include="PowerUpVida.h">
+      <Filter>Archivos de encabezado\actores\Objetos</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

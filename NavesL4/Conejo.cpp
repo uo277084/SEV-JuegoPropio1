@@ -15,35 +15,49 @@ Conejo::Conejo(float x, float y, Game* game)
 	
 	lifes = 3;
 	vx = 1;
-	vxIntelligence = -1;
+	vxIntelligence = 1;
 	vx = vxIntelligence;
 }
 
 void Conejo::update() {
+	if (invulnerableTime > 0) {
+		invulnerableTime--;
+	}
+
 	// Actualizar la animación
 	animation->update();
 
 	if (collisionRight) {
 		//Se choca a la derecha
 		animation = aMovingIzquierda;
-		vx = vxIntelligence * 1;
+		vx = vxIntelligence * -1;
 	}
 	else if (collisionLeft) {
 		//Se choca a la izquierda
 		animation = aMovingDerecha;
-		vx = vxIntelligence * -1;
+		vx = vxIntelligence * 1;
 	}
 }
 
 void Conejo::impacted() {
-	if (lifes == 1 && state != game->stateMoving) {
-		state = game->stateDead;
-	}
-	else {
-		lifes--;
+	if (invulnerableTime <= 0) {
+		if (lifes == 1 && state != game->stateDead) {
+				state = game->stateDead;
+		}
+		else {
+			lifes--;
+			invulnerableTime = 100;
+		}
 	}
 }
 
 void Conejo::draw(float scrollX) {
-	animation->draw(x - scrollX, y);
+	if (invulnerableTime == 0) {
+		animation->draw(x - scrollX, y);
+	}
+	else {
+		if (invulnerableTime % 10 >= 0 && invulnerableTime % 10 <= 5) {
+			animation->draw(x - scrollX, y);
+		}
+	}
 }

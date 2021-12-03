@@ -14,6 +14,7 @@ public:
 	void moveY(float axis);
 	void draw(float scrollX = 0) override; // Va a sobrescribir
 	void loseLife();
+	void addLife();
 	Bomba* putBomb();
 	void menosEfecto();
 	int lifes = 3;
@@ -35,5 +36,7 @@ public:
 	int shootTime = 0;
 	bool afectado;
 	int timeAfectado;
+	int afectadoCadence = 200;
+	int afectadoTime = 0;
 };
 

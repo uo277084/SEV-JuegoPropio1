@@ -13,6 +13,7 @@ public:
 	float vxIntelligence;
 	int state;
 	int lifes;
+	int invulnerableTime = 0;
 	Animation* aMovingDerecha;
 	Animation* aMovingIzquierda;
 	Animation* animation; // Referencia a la animación mostrada

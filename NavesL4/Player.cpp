@@ -88,6 +88,12 @@ void Player::update() {
 	if (shootTime > 0) {
 		shootTime--;
 	}
+	if (afectadoTime > 0) {
+		afectadoTime--;
+	}
+	else if (afectadoTime == 0) {
+		afectado = false;
+	}
 	animation->update();
 }
 
@@ -138,5 +144,10 @@ Bomba* Player::putBomb()
 
 void Player::menosEfecto()
 {
+	afectadoTime = afectadoCadence;
 	afectado = true;
+}
+
+void Player::addLife() {
+	lifes++;
 }

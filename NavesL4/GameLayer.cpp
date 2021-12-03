@@ -35,8 +35,11 @@ void GameLayer::init() {
 	bombas.clear();
 	bloquesLadrillo.clear();
 	monedas.clear();
+	powerUpsMenosEfecto.clear();
+	powerUpsMasVida.clear();
 
 	loadMap("res/Level1.txt");
+
 	numEnemigos = enemiesBees.size() + enemiesRabbits.size();
 	numMonedas = monedas.size();
 	textVidas = new Text("hola", WIDTH * 0.09, HEIGHT * 0.04, game);
@@ -106,7 +109,7 @@ void GameLayer::loadMapObject(char character, float x, float y)
 			break;
 		}
 		case 'P': {
-			Tile* tile = new Tile("res/bloque_metal1.png", x, y, game);
+			Tile* tile = new Tile("res/bloque_metal.png", x, y, game);
 			tile->y = tile->y - tile->height / 2;
 			tiles.push_back(tile);
 			space->addStaticActor(tile);
@@ -116,7 +119,21 @@ void GameLayer::loadMapObject(char character, float x, float y)
 			Moneda* moneda = new Moneda(x, y, game);
 			moneda->y = moneda->y - 2 * (moneda->height / 3);
 			monedas.push_back(moneda);
-			space->addStaticActor(moneda);
+			space->addDynamicActor(moneda);
+			break;
+		}
+		case 'U': {
+			Tile* powerUp = new Tile("res/menos-efecto.jpg", x, y, 20, 20, game);
+			powerUp->y = powerUp->y - 2 * (powerUp->height / 3);
+			powerUpsMenosEfecto.push_back(powerUp);
+			space->addDynamicActor(powerUp);
+			break;
+		}
+		case 'V': {
+			PowerUpVida* pv = new PowerUpVida(x, y, game);
+			pv->y = pv->y - 2 * (pv->height / 3);
+			powerUpsMasVida.push_back(pv);
+			space->addDynamicActor(pv);
 			break;
 		}
 	}
@@ -162,8 +179,7 @@ void GameLayer::processControls() {
 
 
 	}
-	//procesar controles
-	// Disparar
+	// Poner bomba
 	if (controlContinue) {
 		pause = false;
 		controlContinue = false;
@@ -172,8 +188,8 @@ void GameLayer::processControls() {
 	if (controlPutBomb) {
 		Bomba* bomba = player->putBomb();
 		if (bomba != NULL) {
-			space->addStaticActor(bomba);
 			bombas.push_back(bomba);
+			space->addDynamicActor(bomba);
 		}
 	}
 
@@ -220,11 +236,15 @@ void GameLayer::update() {
 
 	space->update();
 	player->update();
+
 	for (auto const& bee : enemiesBees) {
 		bee->update();
 	}
 	for (auto const& rabbit : enemiesRabbits) {
 		rabbit->update();
+	}
+	for (auto const& bomba : bombas) {
+		bomba->update();
 	}
 
 	// Colisiones
@@ -256,59 +276,54 @@ void GameLayer::update() {
 		}
 	}
 
+	for (auto const& bomba : bombas) {
+		if (player->isOverlap(bomba) && bomba->state == bomba->stateExplotando) {
+			player->loseLife();
+			textVidas->content = to_string(player->lifes);
+			if (player->lifes <= 0) {
+				game->currentLevel++;
+				if (game->currentLevel > game->finalLevel) {
+					game->currentLevel = 0;
+				}
+				message = new Actor("res/mensaje_perder.png", WIDTH * 0.5, HEIGHT * 0.5,
+					WIDTH, HEIGHT, game);
+				pause = true;
+				init();
+				return;
+			}
+		}
+	}
+
 	// Colisiones , Enemy - Projectile
 
 	list<Abeja*> deleteEnemiesBees;
 	list<Conejo*> deleteEnemiesRabbits;
 	list<Bomba*> deleteBombs;
 	list<Moneda*> deleteMonedas;
+	list<Tile*> deletePowerUps;
+	list<PowerUpVida*> deletePowerUpsVida;
 
 	//TODO
-	for (auto const& bomb : bombas) {
-		if (bomb->isInRender(scrollX) == false || bomb->vx == 0) {
-
-			bool pInList = std::find(deleteBombs.begin(),
-				deleteBombs.end(),
-				bomb) != deleteBombs.end();
-
-			if (!pInList) {
-				deleteBombs.push_back(bomb);
-			}
-		}
-	}
 
 	for (auto const& bee : enemiesBees) {
 		for (auto const& bomb : bombas) {
-			if (bee->isOverlap(bomb)) {
-				bool pInList = std::find(deleteBombs.begin(),
-					deleteBombs.end(),
-					bomb) != deleteBombs.end();
-
-				if (!pInList) {
-					deleteBombs.push_back(bomb);
-				}
-
+			if (bee->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
 				bee->impacted();
 				enemigosMatados++;
-				textEnemigos->content = to_string(enemigosMatados);
+				textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
 			}
 		}
 	}
 
 	for (auto const& rabbit : enemiesRabbits) {
 		for (auto const& bomb : bombas) {
-			if (rabbit->isOverlap(bomb)) {
-				bool pInList = std::find(deleteBombs.begin(),
-					deleteBombs.end(),
-					bomb) != deleteBombs.end();
-
-				if (!pInList) {
-					deleteBombs.push_back(bomb);
-				}
-
+			if (rabbit->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
 				rabbit->impacted();
-				enemigosMatados++;
-				textEnemigos->content = to_string(enemigosMatados);
+				if (rabbit->state == game->stateDead) {
+					enemigosMatados++;
+					textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
+				}
+				
 			}
 		}
 	}
@@ -324,6 +339,33 @@ void GameLayer::update() {
 			}
 			monedasRecogidas++;
 			textMonedas->content = to_string(monedasRecogidas) + "/" + to_string(numMonedas);
+		}
+	}
+
+	for (auto const& powerUp : powerUpsMenosEfecto) {
+		if (player->isOverlap(powerUp)) {
+			bool pInList = std::find(deletePowerUps.begin(),
+				deletePowerUps.end(),
+				powerUp) != deletePowerUps.end();
+
+			if (!pInList) {
+				deletePowerUps.push_back(powerUp);
+			}
+			player->menosEfecto();
+		}
+	}
+
+	for (auto const& powerUp : powerUpsMasVida) {
+		if (player->isOverlap(powerUp)) {
+			bool pInList = std::find(deletePowerUpsVida.begin(),
+				deletePowerUpsVida.end(),
+				powerUp) != deletePowerUpsVida.end();
+
+			if (!pInList) {
+				deletePowerUpsVida.push_back(powerUp);
+			}
+			player->addLife();
+			textVidas->content = to_string(player->lifes);
 		}
 	}
 
@@ -351,6 +393,18 @@ void GameLayer::update() {
 		}
 	}
 
+	for (auto const& bomba : bombas) {
+		if (bomba->state == bomba->stateExplotada) {
+			bool eInList = std::find(deleteBombs.begin(),
+				deleteBombs.end(),
+				bomba) != deleteBombs.end();
+
+			if (!eInList) {
+				deleteBombs.push_back(bomba);
+			}
+		}
+	}
+
 	for (auto const& delEnemyBee : deleteEnemiesBees) {
 		enemiesBees.remove(delEnemyBee);
 		space->removeDynamicActor(delEnemyBee);
@@ -372,10 +426,17 @@ void GameLayer::update() {
 
 	for (auto const& delMoneda : deleteMonedas) {
 		monedas.remove(delMoneda);
-		space->removeStaticActor(delMoneda);
+		space->removeDynamicActor(delMoneda);
 		delete delMoneda;
 	}
 	deleteMonedas.clear();
+
+	for (auto const& delPowerUp : deletePowerUps) {
+		powerUpsMenosEfecto.remove(delPowerUp);
+		space->removeDynamicActor(delPowerUp);
+		delete delPowerUp;
+	}
+	deletePowerUps.clear();
 
 	cout << "update GameLayer" << endl;
 }
@@ -401,10 +462,11 @@ void GameLayer::draw() {
 	calculateScroll();
 
 	background->draw();
+
 	for (auto const& tile : tiles) {
 		tile->draw(scrollX);
 	}
-
+	
 	for (auto const& bomb : bombas) {
 		bomb->draw(scrollX);
 	}
@@ -417,6 +479,9 @@ void GameLayer::draw() {
 	}
 	for (auto const& moneda : monedas) {
 		moneda->draw(scrollX);
+	}
+	for (auto const& powerUp : powerUpsMenosEfecto) {
+		powerUp->draw(scrollX);
 	}
 
 	textEnemigos->draw();

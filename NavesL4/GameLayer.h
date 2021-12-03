@@ -18,6 +18,7 @@
 #include "Abeja.h"
 #include "Conejo.h"
 #include "Moneda.h"
+#include "PowerUpVida.h"
 
 class GameLayer : public Layer
 {
@@ -65,6 +66,8 @@ public:
 	list<Tile*> bloquesLadrillo;
 	list<Bomba*> bombas;
 	list<Moneda*> monedas;
+	list<Tile*> powerUpsMenosEfecto;
+	list<PowerUpVida*> powerUpsMasVida;
 
 	bool controlContinue = false;
 	bool controlPutBomb = false;
