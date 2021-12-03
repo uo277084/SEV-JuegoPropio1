@@ -1,7 +1,6 @@
 #include "Actor.h"
 
 Actor::~Actor() {
-	
 }
 
 Actor::Actor(string filename, float x, float y, int width, int height, Game* game) {

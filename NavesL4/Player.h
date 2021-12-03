@@ -15,7 +15,7 @@ public:
 	void draw(float scrollX = 0) override; // Va a sobrescribir
 	void loseLife();
 	void addLife();
-	Bomba* putBomb();
+	Bomba* putBomb(float x, float y);
 	void menosEfecto();
 	int lifes = 3;
 	int invulnerableTime = 0;

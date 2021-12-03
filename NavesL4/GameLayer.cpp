@@ -186,7 +186,26 @@ void GameLayer::processControls() {
 	}
 
 	if (controlPutBomb) {
-		Bomba* bomba = player->putBomb();
+		//Calcular x e y
+		float inicio = 0;
+		float xb = 10;
+		float final = 20;
+		while (!(player->x >= inicio && player->x < final)) {
+			//Mientras no este entre el inicio y el final
+			inicio = final;
+			final += 20;
+			xb = (final + inicio) / 2;
+		}
+		inicio = 0;
+		float yb = 10;
+		final = 20;
+		while (!(player->y >= inicio && player->y < final)) {
+			//Mientras no este entre el inicio y el final
+			inicio = final;
+			final += 20;
+			yb = (final + inicio) / 2;
+		}
+		Bomba* bomba = player->putBomb(xb, yb);
 		if (bomba != NULL) {
 			bombas.push_back(bomba);
 			space->addDynamicActor(bomba);

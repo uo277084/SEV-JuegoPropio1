@@ -125,16 +125,11 @@ void Player::loseLife() {
 	}
 }
 
-Bomba* Player::putBomb()
+Bomba* Player::putBomb(float xb, float yb)
 {
 	if (shootTime == 0) {
 		shootTime = shootCadence;
-		Bomba* bomba = new Bomba(x, y, game, afectado);
-		/*
-		if (orientation == game->orientationLeft) {
-			bomba->vx = bomba->vx * -1; // Invertir
-		}
-		*/
+		Bomba* bomba = new Bomba(xb, yb, game, afectado);
 		return bomba;
 	}
 	else {
