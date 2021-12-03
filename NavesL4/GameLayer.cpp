@@ -572,6 +572,7 @@ void GameLayer::mouseToControls(SDL_Event event) {
 			pad->clicked = true;
 			// CLICK TAMBIEN TE MUEVE
 			controlMoveX = pad->getOrientationX(motionX);
+			controlMoveY = pad->getOrientationY(motionY);
 		}
 		if (buttonShoot->containsPoint(motionX, motionY)) {
 			controlPutBomb = true;
@@ -582,15 +583,19 @@ void GameLayer::mouseToControls(SDL_Event event) {
 	if (event.type == SDL_MOUSEMOTION) {
 		if (pad->clicked && pad->containsPoint(motionX, motionY)) {
 			controlMoveX = pad->getOrientationX(motionX);
+			controlMoveY = pad->getOrientationY(motionY);
 			// Rango de -20 a 20 es igual que 0
 			if (controlMoveX > -20 && controlMoveX < 20) {
 				controlMoveX = 0;
 			}
-
+			else if (controlMoveY > -20 && controlMoveY < 20) {
+				controlMoveY = 0;
+			}
 		}
 		else {
 			pad->clicked = false; // han sacado el ratón del pad
 			controlMoveX = 0;
+			controlMoveY = 0;
 		}
 		if (buttonShoot->containsPoint(motionX, motionY) == false) {
 			controlPutBomb = false;
@@ -603,6 +608,7 @@ void GameLayer::mouseToControls(SDL_Event event) {
 			pad->clicked = false;
 			// LEVANTAR EL CLICK TAMBIEN TE PARA
 			controlMoveX = 0;
+			controlMoveY = 0;
 		}
 
 		if (buttonShoot->containsPoint(motionX, motionY)) {

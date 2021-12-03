@@ -4,11 +4,14 @@ Bomba::Bomba(float x, float y, Game* game, bool powerUpAfectado) :
 	Actor("res/bombaImage.png", x, y, 20, 30, game) {
 	afectado = powerUpAfectado;
  	state = stateEncendida;
-	tiempoEncendida = 70;
+	tiempoEncendida = 100;
+
 	audioExplosion = new Audio("res/efecto_explosion.wav", false);
+
 	animacionBomba = new Animation("res/bomba.png", width, height, 60, 30, 6, 3, true, game);
 	animacionExplosionLittle = new Animation("res/explosion_little.png", 45, 45, 180, 45, 8, 4, false, game);
 	animacionExplosionGrande = new Animation("res/explosion_grande.png", 90, 90, 360, 90, 8, 4, false, game);
+	
 	animacion = animacionBomba;
 }
 
@@ -33,7 +36,7 @@ void Bomba::update() {
 		}
 		audioExplosion->play();
 		state = stateExplotando; 
-		tiempoEncendida = 70;
+		tiempoEncendida = 100;
 	}
 	else {
 		tiempoEncendida--;
