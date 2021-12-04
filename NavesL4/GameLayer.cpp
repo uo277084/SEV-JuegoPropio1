@@ -531,12 +531,12 @@ void GameLayer::gamePadToControls(SDL_Event event) {
 
 	// Leer los botones
 	bool buttonA = SDL_GameControllerGetButton(gamePad, SDL_CONTROLLER_BUTTON_A);
-	bool buttonB = SDL_GameControllerGetButton(gamePad, SDL_CONTROLLER_BUTTON_B);
 	// SDL_CONTROLLER_BUTTON_A, SDL_CONTROLLER_BUTTON_B
 	// SDL_CONTROLLER_BUTTON_X, SDL_CONTROLLER_BUTTON_Y
-	cout << "botones:" << buttonA << "," << buttonB << endl;
+	cout << "botón:" << buttonA << endl;
 	int stickX = SDL_GameControllerGetAxis(gamePad, SDL_CONTROLLER_AXIS_LEFTX);
 	cout << "stickX" << stickX << endl;
+	int stickY = SDL_GameControllerGetAxis(gamePad, SDL_CONTROLLER_AXIS_LEFTY);
 
 	// Retorna aproximadamente entre [-32800, 32800], el centro debería estar en 0
 	// Si el mando tiene "holgura" el centro varia [-4000 , 4000]
@@ -549,19 +549,21 @@ void GameLayer::gamePadToControls(SDL_Event event) {
 	else {
 		controlMoveX = 0;
 	}
+	if (stickY > 4000) {
+		controlMoveY = 1;
+	}
+	else if (stickY < -4000) {
+		controlMoveY = -1;
+	}
+	else {
+		controlMoveY = 0;
+	}
 
 	if (buttonA) {
 		controlPutBomb = true;
 	}
 	else {
 		controlPutBomb = false;
-	}
-
-	if (buttonB) {
-		controlMoveY = -1; // Saltar
-	}
-	else {
-		controlMoveY = 0;
 	}
 }
 

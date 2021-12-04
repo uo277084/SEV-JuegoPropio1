@@ -5,7 +5,6 @@ Pad::Pad(float x, float y, Game* game)
 
 }
 
-
 float Pad::getOrientationX(float clickX) {
 	return clickX - x;
 }
