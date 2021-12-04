@@ -29,8 +29,6 @@ public:
 	void update() override;
 	void draw() override;
 	void keysToControls(SDL_Event event);
-	void mouseToControls(SDL_Event event); // USO DE MOUSE
-	void gamePadToControls(SDL_Event event); // USO DE GAMEPAD
 	void loadMap(string name);
 	void loadMapObject(char character, float x, float y);
 	void calculateScroll();
@@ -43,7 +41,6 @@ public:
 	// Elementos de interfaz
 	SDL_GameController* gamePad;
 	Pad* pad;
-	Actor* buttonShoot;
 
 	Space* space;
 	float scrollX;

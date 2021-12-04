@@ -15,13 +15,13 @@ GameLayer::GameLayer(Game* game)
 void GameLayer::init() {
 	pad = new Pad(WIDTH * 0.15, HEIGHT * 0.80, game);
 
-	buttonShoot = new Actor("res/boton_disparo.png", WIDTH * 0.75, HEIGHT * 0.83, 100, 100, game);
-
 	space = new Space();
 	scrollX = 0;
 	tiles.clear();
 
 	audioBackground = new Audio("res/music-background.mp3", true);
+	//audioBackground = new Audio("res/duki.mp3", true);
+	//audioBackground = new Audio("res/session.mp3", true);
 	audioBackground->play();
 
 	enemigosMatados = 0;
@@ -161,11 +161,6 @@ void GameLayer::processControls() {
 			}
 		}
 
-		// Cambio automático de input
-		// PONER el GamePad
-		if (event.type == SDL_CONTROLLERBUTTONDOWN || event.type == SDL_CONTROLLERAXISMOTION) {
-			game->input = game->inputGamePad;
-		}
 		if (event.type == SDL_KEYDOWN) {
 			game->input = game->inputKeyboard;
 		}
@@ -177,11 +172,9 @@ void GameLayer::processControls() {
 			keysToControls(event);
 		}
 		if (game->input == game->inputMouse) {
-			mouseToControls(event);
-		}
-		// Procesar Mando
-		if (game->input == game->inputGamePad) {  // gamePAD
-			gamePadToControls(event);
+			if (event.type == SDL_MOUSEBUTTONDOWN) {
+				controlContinue = true;
+			}
 		}
 
 
@@ -316,6 +309,7 @@ void GameLayer::update() {
 	list<Moneda*> deleteMonedas;
 	list<Tile*> deletePowerUps;
 	list<PowerUpVida*> deletePowerUpsVida;
+	list<Tile*> deleteBloquesLadrillo;
 
 	//TODO
 
@@ -336,6 +330,20 @@ void GameLayer::update() {
 				if (rabbit->state == game->stateDead) {
 					enemigosMatados++;
 					textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
+				}
+			}
+		}
+	}
+
+	for (auto const& ladrillo : bloquesLadrillo) {
+		for (auto const& bomb : bombas) {
+			if (ladrillo->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
+				bool eInList = std::find(deleteBloquesLadrillo.begin(),
+					deleteBloquesLadrillo.end(),
+					ladrillo) != deleteBloquesLadrillo.end();
+
+				if (!eInList) {
+					deleteBloquesLadrillo.push_back(ladrillo);
 				}
 			}
 		}
@@ -450,12 +458,20 @@ void GameLayer::update() {
 		delete delPowerUp;
 	}
 	deletePowerUps.clear();
+
 	for (auto const& delPV : deletePowerUpsVida) {
 		powerUpsMasVida.remove(delPV);
 		space->removeDynamicActor(delPV);
 		delete delPV;
 	}
 	deletePowerUpsVida.clear();
+
+	for (auto const& delLadrillo : deleteBloquesLadrillo) {
+		bloquesLadrillo.remove(delLadrillo);
+		space->removeStaticActor(delLadrillo);
+		delete delLadrillo;
+	}
+	deleteBloquesLadrillo.clear();
 
 	cout << "update GameLayer" << endl;
 }
@@ -515,112 +531,11 @@ void GameLayer::draw() {
 	backgroundMonedas->draw();
 	backgroundVidas->draw();
 
-	// HUD
-	if (game->input == game->inputMouse) {
-		buttonShoot->draw(); // NO TIENEN SCROLL, POSICION FIJA
-		pad->draw(); // NO TIENEN SCROLL, POSICION FIJA
-	}
 	if (pause) {
 		message->draw();
 	}
 
 	SDL_RenderPresent(game->renderer); // Renderiza
-}
-
-void GameLayer::gamePadToControls(SDL_Event event) {
-
-	// Leer los botones
-	bool buttonA = SDL_GameControllerGetButton(gamePad, SDL_CONTROLLER_BUTTON_A);
-	// SDL_CONTROLLER_BUTTON_A, SDL_CONTROLLER_BUTTON_B
-	// SDL_CONTROLLER_BUTTON_X, SDL_CONTROLLER_BUTTON_Y
-	cout << "botón:" << buttonA << endl;
-	int stickX = SDL_GameControllerGetAxis(gamePad, SDL_CONTROLLER_AXIS_LEFTX);
-	cout << "stickX" << stickX << endl;
-	int stickY = SDL_GameControllerGetAxis(gamePad, SDL_CONTROLLER_AXIS_LEFTY);
-
-	// Retorna aproximadamente entre [-32800, 32800], el centro debería estar en 0
-	// Si el mando tiene "holgura" el centro varia [-4000 , 4000]
-	if (stickX > 4000) {
-		controlMoveX = 1;
-	}
-	else if (stickX < -4000) {
-		controlMoveX = -1;
-	}
-	else {
-		controlMoveX = 0;
-	}
-	if (stickY > 4000) {
-		controlMoveY = 1;
-	}
-	else if (stickY < -4000) {
-		controlMoveY = -1;
-	}
-	else {
-		controlMoveY = 0;
-	}
-
-	if (buttonA) {
-		controlPutBomb = true;
-	}
-	else {
-		controlPutBomb = false;
-	}
-}
-
-void GameLayer::mouseToControls(SDL_Event event) {
-	// Modificación de coordenadas por posible escalado
-	float motionX = event.motion.x / game->scaleLower;
-	float motionY = event.motion.y / game->scaleLower;
-	// Cada vez que hacen click
-	if (event.type == SDL_MOUSEBUTTONDOWN) {
-		controlContinue = true;
-		if (pad->containsPoint(motionX, motionY)) {
-			pad->clicked = true;
-			// CLICK TAMBIEN TE MUEVE
-			controlMoveX = pad->getOrientationX(motionX);
-			controlMoveY = pad->getOrientationY(motionY);
-		}
-		if (buttonShoot->containsPoint(motionX, motionY)) {
-			controlPutBomb = true;
-		}
-
-	}
-	// Cada vez que se mueve
-	if (event.type == SDL_MOUSEMOTION) {
-		if (pad->clicked && pad->containsPoint(motionX, motionY)) {
-			controlMoveX = pad->getOrientationX(motionX);
-			controlMoveY = pad->getOrientationY(motionY);
-			// Rango de -20 a 20 es igual que 0
-			if (controlMoveX > -20 && controlMoveX < 20) {
-				controlMoveX = 0;
-			}
-			else if (controlMoveY > -20 && controlMoveY < 20) {
-				controlMoveY = 0;
-			}
-		}
-		else {
-			pad->clicked = false; // han sacado el ratón del pad
-			controlMoveX = 0;
-			controlMoveY = 0;
-		}
-		if (buttonShoot->containsPoint(motionX, motionY) == false) {
-			controlPutBomb = false;
-		}
-
-	}
-	// Cada vez que levantan el click
-	if (event.type == SDL_MOUSEBUTTONUP) {
-		if (pad->containsPoint(motionX, motionY)) {
-			pad->clicked = false;
-			// LEVANTAR EL CLICK TAMBIEN TE PARA
-			controlMoveX = 0;
-			controlMoveY = 0;
-		}
-
-		if (buttonShoot->containsPoint(motionX, motionY)) {
-			controlPutBomb = false;
-		}
-	}
 }
 
 void GameLayer::keysToControls(SDL_Event event) {
