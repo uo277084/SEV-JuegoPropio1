@@ -193,30 +193,7 @@ void GameLayer::processControls() {
 	}
 
 	if (controlPutBomb) {
-		//Calcular x e y
-		float inicio = 0;
-		float xb = 20;
-		float final = 40;
-		while (!(player->x >= inicio && player->x < final)) {
-			//Mientras no este entre el inicio y el final
-			inicio = final;
-			final += 40;
-			xb = (final + inicio) / 2;
-		}
-		inicio = 0;
-		float yb = 16;
-		final = 32;
-		while (!(player->y >= inicio && player->y < final)) {
-			//Mientras no este entre el inicio y el final
-			inicio = final;
-			final += 32;
-			yb = (final + inicio) / 2;
-		}
-		Bomba* bomba = player->putBomb(xb, yb);
-		if (bomba != NULL) {
-			bombas.push_back(bomba);
-			space->addDynamicActor(bomba);
-		}
+		putBomb();
 	}
 
 	// Eje X
@@ -281,7 +258,15 @@ void GameLayer::update() {
 	for (auto const& bee : enemiesBees) {
 		if (player->isOverlap(bee)) {
 			player->loseLife();
+			textVidas->content = to_string(player->lifes);
 			if (player->lifes <= 0) {
+				game->currentLevel++;
+				if (game->currentLevel > game->finalLevel) {
+					game->currentLevel = 0;
+				}
+				message = new Actor("res/mensaje_perder.png", WIDTH * 0.5, HEIGHT * 0.5,
+					WIDTH, HEIGHT, game);
+				pause = true;
 				init();
 				return;
 			}
@@ -693,4 +678,94 @@ void GameLayer::keysToControls(SDL_Event event) {
 			break;
 		}
 	}
+}
+
+void GameLayer::putBomb() {
+	float xb = calculateXBomb();
+	float yb = calculateYBomb();
+
+	string direction = bombDirection(xb, yb);
+
+	Bomba* bomba = player->putBomb(xb, yb, direction);
+	if (bomba != NULL) {
+		bombas.push_back(bomba);
+		space->addDynamicActor(bomba);
+	}
+}
+
+string GameLayer::bombDirection(float xb, float yb) {
+	//Mirar a ver si hay tiles o tiles destructibles alrededor
+	string direction = "";
+	//Tile izquierda
+	Actor* tile = space->hayTile(xb-40, yb);
+	Tile* t;
+	if (tile != NULL) {
+		t = (Tile*)tile;
+		if (t->destructible) {
+			direction += "l";
+		}
+	}
+	else {
+		direction += "l";
+	}
+	//Tile derecha
+	tile = space->hayTile(xb + 40, yb);
+	if (tile != NULL) {
+		t = (Tile*)tile;
+		if (t->destructible) {
+			direction += "r";
+		}
+	}
+	else {
+		direction += "r";
+	}
+	//Tile arriba
+	tile = space->hayTile(xb, yb - 32);
+	if (tile != NULL) {
+		t = (Tile*)tile;
+		if (t->destructible) {
+			direction += "u";
+		}
+	}
+	else {
+		direction += "u";
+	}
+	//Tile abajo
+	tile = space->hayTile(xb, yb + 32);
+	if (tile != NULL) {
+		t = (Tile*)tile;
+		if (t->destructible) {
+			direction += "d";
+		}
+	}
+	else {
+		direction += "d";
+	}
+	return direction;
+}
+
+float GameLayer::calculateXBomb() {
+	float inicio = 0;
+	float xb = 20;
+	float final = 40;
+	while (!(player->x >= inicio && player->x < final)) {
+		//Mientras no este entre el inicio y el final
+		inicio = final;
+		final += 40;
+		xb = (final + inicio) / 2;
+	}
+	return xb;
+}
+
+float GameLayer::calculateYBomb() {
+	float inicio = 0;
+	float yb = 16;
+	float final = 32;
+	while (!(player->y >= inicio && player->y < final)) {
+		//Mientras no este entre el inicio y el final
+		inicio = final;
+		final += 32;
+		yb = (final + inicio) / 2;
+	}
+	return yb;
 }

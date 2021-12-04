@@ -9,7 +9,7 @@
 #include "Pad.h"
 
 #include "Audio.h"
-#include "Space.h" // importar
+#include "Space.h"
 
 #include <fstream> // Leer ficheros
 #include <sstream> // Leer líneas / String
@@ -34,6 +34,10 @@ public:
 	void loadMap(string name);
 	void loadMapObject(char character, float x, float y);
 	void calculateScroll();
+	void putBomb();
+	float calculateXBomb();
+	float calculateYBomb();
+	string bombDirection(float xb, float yb);
 	Actor* message;
 	bool pause;
 	// Elementos de interfaz

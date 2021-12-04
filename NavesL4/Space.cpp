@@ -1,4 +1,5 @@
 #include "Space.h"
+#include "Tile.h"
 
 Space::Space() {
 	dynamicActors.clear();
@@ -195,5 +196,18 @@ void Space::removeDynamicActor(Actor* actor) {
 }
 
 void Space::removeStaticActor(Actor* actor) {
-	staticActors.remove(actor);
+    staticActors.remove(actor);
+}
+
+Actor *Space::hayTile(float x, float y) {
+    Tile* t;
+    for (auto const& sa : staticActors) {
+        if (sa->containsPoint(x, y)) {
+            t = (Tile*)sa;
+            if (t != NULL) {
+                return t;
+            }
+        }
+    }
+    return NULL;
 }

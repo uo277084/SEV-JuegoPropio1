@@ -15,6 +15,7 @@ public:
 	void addStaticActor(Actor* actor);
 	void removeDynamicActor(Actor* actor);
 	void removeStaticActor(Actor* actor);
+	Actor* hayTile(float x, float y);
 	list<Actor*> dynamicActors;
 	list<Actor*> staticActors;
 };
