@@ -136,6 +136,13 @@ void GameLayer::loadMapObject(char character, float x, float y)
 			space->addDynamicActor(pv);
 			break;
 		}
+		case 'L': {
+			Tile* ladrillo = new Tile("res/bloque_ladrillo.png", x, y, 40, 32, game, true);
+			ladrillo->y = ladrillo->y - ladrillo->height / 2;
+			bloquesLadrillo.push_back(ladrillo);
+			space->addStaticActor(ladrillo);
+			break;
+		}
 	}
 }
 
@@ -188,21 +195,21 @@ void GameLayer::processControls() {
 	if (controlPutBomb) {
 		//Calcular x e y
 		float inicio = 0;
-		float xb = 10;
-		float final = 20;
+		float xb = 20;
+		float final = 40;
 		while (!(player->x >= inicio && player->x < final)) {
 			//Mientras no este entre el inicio y el final
 			inicio = final;
-			final += 20;
+			final += 40;
 			xb = (final + inicio) / 2;
 		}
 		inicio = 0;
-		float yb = 10;
-		final = 20;
+		float yb = 16;
+		final = 32;
 		while (!(player->y >= inicio && player->y < final)) {
 			//Mientras no este entre el inicio y el final
 			inicio = final;
-			final += 20;
+			final += 32;
 			yb = (final + inicio) / 2;
 		}
 		Bomba* bomba = player->putBomb(xb, yb);
@@ -240,8 +247,8 @@ void GameLayer::update() {
 		return;
 	}
 	// Nivel superado
-	bool conditionEnemies = enemigosMatados == (enemiesBees.size() + enemiesRabbits.size());
-	bool conditionCoins = monedasRecogidas == monedas.size();
+	bool conditionEnemies = enemigosMatados == numEnemigos;
+	bool conditionCoins = monedasRecogidas == numMonedas;
 	if (conditionEnemies && conditionCoins) {
 		game->currentLevel++;
 		if (game->currentLevel > game->finalLevel) {
@@ -264,6 +271,9 @@ void GameLayer::update() {
 	}
 	for (auto const& bomba : bombas) {
 		bomba->update();
+	}
+	for (auto const& pv : powerUpsMasVida) {
+		pv->update();
 	}
 
 	// Colisiones
@@ -342,7 +352,6 @@ void GameLayer::update() {
 					enemigosMatados++;
 					textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
 				}
-				
 			}
 		}
 	}
@@ -456,6 +465,12 @@ void GameLayer::update() {
 		delete delPowerUp;
 	}
 	deletePowerUps.clear();
+	for (auto const& delPV : deletePowerUpsVida) {
+		powerUpsMasVida.remove(delPV);
+		space->removeDynamicActor(delPV);
+		delete delPV;
+	}
+	deletePowerUpsVida.clear();
 
 	cout << "update GameLayer" << endl;
 }
@@ -476,13 +491,15 @@ void GameLayer::calculateScroll() {
 	}
 }
 
-
 void GameLayer::draw() {
 	calculateScroll();
 
 	background->draw();
 
 	for (auto const& tile : tiles) {
+		tile->draw(scrollX);
+	}
+	for (auto const& tile : bloquesLadrillo) {
 		tile->draw(scrollX);
 	}
 	
@@ -501,6 +518,9 @@ void GameLayer::draw() {
 	}
 	for (auto const& powerUp : powerUpsMenosEfecto) {
 		powerUp->draw(scrollX);
+	}
+	for (auto const& powerUpVida : powerUpsMasVida) {
+		powerUpVida->draw(scrollX);
 	}
 
 	textEnemigos->draw();
@@ -559,7 +579,6 @@ void GameLayer::gamePadToControls(SDL_Event event) {
 		controlMoveY = 0;
 	}
 }
-
 
 void GameLayer::mouseToControls(SDL_Event event) {
 	// Modificación de coordenadas por posible escalado
@@ -675,4 +694,3 @@ void GameLayer::keysToControls(SDL_Event event) {
 		}
 	}
 }
-
