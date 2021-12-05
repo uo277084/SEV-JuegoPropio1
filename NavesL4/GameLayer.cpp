@@ -37,6 +37,7 @@ void GameLayer::init() {
 	powerUpsMasVida.clear();
 
 	loadMap("res/Level1.txt");
+	//loadMap("res/Level2.txt");
 
 	numEnemigos = enemiesBees.size() + enemiesRabbits.size();
 	numMonedas = monedas.size();
