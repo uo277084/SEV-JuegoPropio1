@@ -7,6 +7,7 @@ Abeja::Abeja(float x, float y, Game* game)
 
 	aMoving = new Animation("res/abeja-mov.png", width, height,
 		32, 16, 6, 2, true, game);
+
 	animation = aMoving;
 
 	vy = 1;
@@ -16,7 +17,6 @@ Abeja::Abeja(float x, float y, Game* game)
 }
 
 void Abeja::update() {
-	// Actualizar la animación
 	animation->update();
 
 	if (collisionDown) {

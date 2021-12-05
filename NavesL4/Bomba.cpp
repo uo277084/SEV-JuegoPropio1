@@ -9,8 +9,10 @@ Bomba::Bomba(float x, float y, Game* game, bool powerUpAfectado, string directio
 	calculateDirection(direction);
 
 	audioExplosion = new Audio("res/efecto_explosion.wav", false);
+
 	animacionBomba = new Animation("res/bomba.png", width, height, 60, 30, 4, 3, true, game);
-	animacionExplosionLittle = new Animation("res/explosion_little.png", 45, 45, 180, 45, 3, 4, false, game);
+
+	animacionExplosionLittle = new Animation("res/explosion_little.png", 30, 30, 120, 30, 3, 4, false, game);
 	animacionExplosionGrande = new Animation("res/explosion_big_" + direction + ".png", 90, 90, 360, 90, 3, 4, false, game);
 	
 	animacion = animacionBomba;
@@ -24,10 +26,11 @@ void Bomba::update() {
 			state = stateExplotada;
 		}
 	}
+
 	if (tiempoEncendida == 0) {
 		if (afectado) {
 			// explosion pequeña
-			width = height = 45;
+			width = height = 30;
 			animacion = animacionExplosionLittle;
 		}
 		else {
@@ -53,7 +56,7 @@ void Bomba::calculateDirection(string direction) {
 	string r = "r";
 	string u = "u";
 	string d = "d";
-	//str.find(str2) != string::npos
+
 	if (direction.find(l) != std::string::npos) {
 		izq = true;
 	}

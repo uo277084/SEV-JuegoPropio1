@@ -11,6 +11,7 @@ Conejo::Conejo(float x, float y, Game* game)
 		60, 30, 6, 2, true, game);
 	aMovingIzquierda = new Animation("res/conejo-izquierda.png", width, height,
 		60, 30, 6, 2, true, game);
+
 	animation = aMovingDerecha;
 	
 	lifes = 3;
@@ -24,7 +25,6 @@ void Conejo::update() {
 		invulnerableTime--;
 	}
 
-	// Actualizar la animación
 	animation->update();
 
 	if (collisionRight) {

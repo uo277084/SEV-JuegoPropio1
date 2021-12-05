@@ -20,8 +20,6 @@ void GameLayer::init() {
 	tiles.clear();
 
 	audioBackground = new Audio("res/music-background.mp3", true);
-	//audioBackground = new Audio("res/duki.mp3", true);
-	//audioBackground = new Audio("res/session.mp3", true);
 	audioBackground->play();
 
 	enemigosMatados = 0;
@@ -337,7 +335,7 @@ void GameLayer::update() {
 
 	for (auto const& ladrillo : bloquesLadrillo) {
 		for (auto const& bomb : bombas) {
-			if (bomb->state == bomb->stateExplotando && isOverlapBomb(ladrillo, bomb)) {
+			if (bomb->state == bomb->stateExplotando && isOverlapBombTile(ladrillo, bomb)) {
 				bool eInList = std::find(deleteBloquesLadrillo.begin(),
 					deleteBloquesLadrillo.end(),
 					ladrillo) != deleteBloquesLadrillo.end();
@@ -549,16 +547,16 @@ void GameLayer::keysToControls(SDL_Event event) {
 		case SDLK_1:
 			game->scale();
 			break;
-		case SDLK_d: // derecha
+		case SDLK_RIGHT: // derecha
 			controlMoveX = 1;
 			break;
-		case SDLK_a: // izquierda
+		case SDLK_LEFT: // izquierda
 			controlMoveX = -1;
 			break;
-		case SDLK_w: // arriba
+		case SDLK_UP: // arriba
 			controlMoveY = -1;
 			break;
-		case SDLK_s: // abajo
+		case SDLK_DOWN: // abajo
 			controlMoveY = 1;
 			break;
 		case SDLK_SPACE: // dispara
@@ -570,22 +568,22 @@ void GameLayer::keysToControls(SDL_Event event) {
 		int code = event.key.keysym.sym;
 		// Levantada
 		switch (code) {
-		case SDLK_d: // derecha
+		case SDLK_RIGHT: // derecha
 			if (controlMoveX == 1) {
 				controlMoveX = 0;
 			}
 			break;
-		case SDLK_a: // izquierda
+		case SDLK_LEFT: // izquierda
 			if (controlMoveX == -1) {
 				controlMoveX = 0;
 			}
 			break;
-		case SDLK_w: // arriba
+		case SDLK_UP: // arriba
 			if (controlMoveY == -1) {
 				controlMoveY = 0;
 			}
 			break;
-		case SDLK_s: // abajo
+		case SDLK_DOWN: // abajo
 			if (controlMoveY == 1) {
 				controlMoveY = 0;
 			}
@@ -693,28 +691,75 @@ bool GameLayer::isOverlapBomb(Actor* actor, Bomba* bomb)
 	float ya = actor->y;
 	float xb = bomb->x;
 	float yb = bomb->y;
+
 	if (!bomb->afectado) {
 		if (bomb->izq) {
-			if (xb - (bomb->width / 2) <= xa && xa <= xb && ya <= yb + 20 && yb - 20 <= ya) {
+			if (xb - (bomb->width / 2) <= xa + (actor->width / 2) && xa <= xb && ya <= yb + 20 && yb - 20 <= ya) {
 				return true;
 			}
 		}
 		if (bomb->der) {
-			if (xb <= xa && xa <= (bomb->width / 2) && ya <= yb + 20 && yb - 20 <= ya) {
+			if (xb <= xa && xa - (actor->width / 2) <= xb + (bomb->width / 2) && ya <= yb + 20 && yb - 20 <= ya) {
 				return true;
 			}
 		}
 		if (bomb->up) {
-			if (yb - (bomb->height / 2) <= ya && ya <= yb && xa <= xa + 20 && xb - 20 <= xa) {
+			if (yb - (bomb->height / 2) <= ya + (actor->height / 2) && ya <= yb && xa <= xb + 20 && xb - 20 <= xa) {
 				return true;
 			}
 		}
 		if (bomb->down) {
-			if (yb <= ya && ya <= (yb + bomb->height / 2) && xa <= xa + 20 && xb - 20 <= xa) {
+			if (yb <= ya && ya - (actor->height / 2) <= yb + (bomb->height / 2) && xa <= xb + 20 && xb - 20 <= xa) {
 				return true;
 			}
 		}
+		return false;
 	}
-	return false;
+	else {
+		return actor->isOverlap(bomb);
+	}
 }
 
+bool GameLayer::isOverlapBombTile(Tile* tile, Bomba* bomb)
+{
+	float xa = tile->x;
+	float ya = tile->y;
+	float xb = bomb->x;
+	float yb = bomb->y;
+	float na, nb;
+
+	if (!bomb->afectado) {
+		if (bomb->izq) {
+			na = (xa + tile->width / 2);	//parte der del tile
+			nb = (xb - bomb->width / 2);	//parte izq de la bomba
+			if (ya == yb && na >= nb) {
+				return true;
+			}
+		}
+		if (bomb->der) {
+			na = (xa - bomb->width / 2);	//parte izq del tile
+			nb = (xb + bomb->width / 2);	//parte der de la bomba
+			if (ya == yb && nb >= na) {
+				return true;
+			}
+		}
+		if (bomb->up) {
+			na = (ya + tile->height / 2);	//parte abajo del tile
+			nb = (yb - bomb->height / 2);	//parte arriba de la bomba
+			if (xa == xb && na >= nb) {
+				return true;
+			}
+		}
+		if (bomb->down) {
+			na = (ya - tile->height);	//parte arriba del tile
+			nb = (yb + bomb->height / 2);	//parte abajo de la bomba
+			if (xa == xb && nb >= na) {
+				return true;
+			}
+		}
+		return false;
+	}
+	else {
+		return tile->isOverlap(bomb);
+	}
+}

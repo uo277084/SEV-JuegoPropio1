@@ -36,6 +36,7 @@ public:
 	float calculateXBomb();
 	float calculateYBomb();
 	bool isOverlapBomb(Actor* actor, Bomba* bomb);
+	bool isOverlapBombTile(Tile* tile, Bomba* bomb);
 	string bombDirection(float xb, float yb);
 	Actor* message;
 	bool pause;
