@@ -284,7 +284,7 @@ void GameLayer::update() {
 	}
 
 	for (auto const& bomba : bombas) {
-		if (player->isOverlap(bomba) && bomba->state == bomba->stateExplotando) {
+		if (bomba->state == bomba->stateExplotando && isOverlapBomb(player, bomba)) {
 			player->loseLife();
 			textVidas->content = to_string(player->lifes);
 			if (player->lifes <= 0) {
@@ -315,7 +315,7 @@ void GameLayer::update() {
 
 	for (auto const& bee : enemiesBees) {
 		for (auto const& bomb : bombas) {
-			if (bee->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
+			if (bomb->state == bomb->stateExplotando && isOverlapBomb(bee, bomb)) {
 				bee->impacted();
 				enemigosMatados++;
 				textEnemigos->content = to_string(enemigosMatados) + "/" + to_string(numEnemigos);
@@ -325,7 +325,7 @@ void GameLayer::update() {
 
 	for (auto const& rabbit : enemiesRabbits) {
 		for (auto const& bomb : bombas) {
-			if (rabbit->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
+			if (bomb->state == bomb->stateExplotando && isOverlapBomb(rabbit, bomb)) {
 				rabbit->impacted();
 				if (rabbit->state == game->stateDead) {
 					enemigosMatados++;
@@ -337,7 +337,7 @@ void GameLayer::update() {
 
 	for (auto const& ladrillo : bloquesLadrillo) {
 		for (auto const& bomb : bombas) {
-			if (ladrillo->isOverlap(bomb) && bomb->state == bomb->stateExplotando) {
+			if (bomb->state == bomb->stateExplotando && isOverlapBomb(ladrillo, bomb)) {
 				bool eInList = std::find(deleteBloquesLadrillo.begin(),
 					deleteBloquesLadrillo.end(),
 					ladrillo) != deleteBloquesLadrillo.end();
@@ -686,3 +686,35 @@ float GameLayer::calculateYBomb() {
 	}
 	return yb;
 }
+
+bool GameLayer::isOverlapBomb(Actor* actor, Bomba* bomb)
+{
+	float xa = actor->x;
+	float ya = actor->y;
+	float xb = bomb->x;
+	float yb = bomb->y;
+	if (!bomb->afectado) {
+		if (bomb->izq) {
+			if (xb - (bomb->width / 2) <= xa && xa <= xb && ya <= yb + 20 && yb - 20 <= ya) {
+				return true;
+			}
+		}
+		if (bomb->der) {
+			if (xb <= xa && xa <= (bomb->width / 2) && ya <= yb + 20 && yb - 20 <= ya) {
+				return true;
+			}
+		}
+		if (bomb->up) {
+			if (yb - (bomb->height / 2) <= ya && ya <= yb && xa <= xa + 20 && xb - 20 <= xa) {
+				return true;
+			}
+		}
+		if (bomb->down) {
+			if (yb <= ya && ya <= (yb + bomb->height / 2) && xa <= xa + 20 && xb - 20 <= xa) {
+				return true;
+			}
+		}
+	}
+	return false;
+}
+

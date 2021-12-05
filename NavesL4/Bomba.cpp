@@ -49,21 +49,21 @@ void Bomba::draw(float scrollX) {
 }
 
 void Bomba::calculateDirection(string direction) {
-	string left = "l";
-	string right = "r";
-	string up = "u";
-	string down = "d";
+	string l = "l";
+	string r = "r";
+	string u = "u";
+	string d = "d";
 	//str.find(str2) != string::npos
-	if (direction.find(left) != std::string::npos) {
+	if (direction.find(l) != std::string::npos) {
 		izq = true;
 	}
-	if (direction.find(right) != std::string::npos) {
+	if (direction.find(r) != std::string::npos) {
 		der = true;
 	}
-	if (direction.find(up) != std::string::npos) {
+	if (direction.find(u) != std::string::npos) {
 		up = true;
 	}
-	if (direction.find(down) != std::string::npos) {
+	if (direction.find(d) != std::string::npos) {
 		down = true;
 	}
 }
